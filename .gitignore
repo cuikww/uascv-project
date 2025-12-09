@@ -1,0 +1,5 @@
+# Buat file bernama .gitignore lalu isi dengan teks di bawah ini:
+node_modules/
+.env
+.DS_Store
+dist/
