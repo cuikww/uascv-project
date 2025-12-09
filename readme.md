@@ -35,7 +35,7 @@ Ikuti langkah berikut **secara berurutan**.
 Buka terminal (CMD / PowerShell / Git Bash) di folder tujuan, lalu jalankan:
 
 ```bash
-git clone https://github.com/USERNAME/NAMA-REPO-KITA.git
+git clone https://github.com/cuikww/uascv-project
 cd uascv-project
 ```
 
