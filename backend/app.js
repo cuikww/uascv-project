@@ -15,9 +15,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/auth', authRoute);
-app.use('/onboarding', basicInfoRoute);
-app.use('/onboarding', cvRoute);
+app.use('/api/auth', authRoute);
+app.use('/api/onboarding', cvRoute);
+app.use('/api/basicdetails', basicInfoRoute);
 
 // --- ROUTE DEFAULT ---
 app.get('/', (req, res) => {

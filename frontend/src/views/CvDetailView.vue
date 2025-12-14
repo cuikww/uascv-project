@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { getCv, updateCv } from "@/api/cv.js";
 import { getCvBasicInfoById, insertCvBasicInfo, updateCvBasicInfo } from "@/api/basic.js";
-import router from "@/router";
 
 const route = useRoute();
 const cvId = route.params.cvId;
@@ -260,11 +259,6 @@ input, select, textarea {
 textarea {
   resize: vertical;
   min-height: 80px;
-}
-
-.message {
-  margin-top: 1rem;
-  color: green;
 }
 
 .loading {

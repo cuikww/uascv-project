@@ -53,7 +53,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/onboarding/cv/:cvId',
+      path: '/basicdetails/:cvId',
       name: 'cvDetail',
       component: CvDetailView,
       meta: {

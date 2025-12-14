@@ -1,0 +1,144 @@
+/* ===============================
+   Global & Reusable Styles
+   Tujuan: dipakai ulang oleh Login, Register, Onboarding, dll
+   =============================== */
+
+:root {
+  --primary: #5edbee;
+  --primary-dark: #45c9db;
+  --secondary: #77f582;
+  --text-dark: #333;
+  --success: #3c9d5f;
+  --danger: #e74c3c;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: var(--text-dark);
+}
+
+/* ===============================
+   Background Layout (Auth, Onboarding)
+   =============================== */
+
+.page-background {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    linear-gradient(to top, white 50%, transparent 50%),
+    linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+/* ===============================
+   Card Container
+   =============================== */
+
+.card {
+  background: white;
+  padding: 4rem;
+  width: 100%;
+  max-width: 1000px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+  text-align: center;
+  font-size: 30px;
+  margin-bottom: 1.5rem;
+}
+
+/* ===============================
+   Form
+   =============================== */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form input,
+.form select,
+.form textarea {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  border-color: var(--primary);
+}
+
+/* ===============================
+   Button
+   =============================== */
+
+.btn {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+/* ===============================
+   Message & Error
+   =============================== */
+
+.message {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--success);
+}
+
+.error {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--danger);
+}
+
+/* ===============================
+   Utility
+   =============================== */
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }

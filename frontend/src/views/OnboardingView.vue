@@ -58,15 +58,15 @@ const removeCv = async (cvId) => {
 
 // navigasi ke detail
 const goToDetail = (cvId) => {
-  router.push(`/onboarding/cv/${cvId}`);
+  router.push(`/basicdetails/${cvId}`);
 };
 
 onMounted(fetchCvs);
 </script>
 
 <template>
-  <div class="background">
-    <div class="top"><h2>Daftar CV</h2></div>
+  <div class="page-background">
+    <div class="text-center"><h2>Daftar CV</h2></div>
 
     <div class="actions">
       <button @click="showCreateModal = true">+</button>
@@ -105,29 +105,16 @@ onMounted(fetchCvs);
 </template>
 
 <style scoped>
-.background {
-  min-height: 100vh;
-  display: flex;
+.page-background {
   flex-direction: column; 
-  align-items: center;
   justify-content: flex-start;
-  background:
-    linear-gradient(to top, white 50%, transparent 50%),
-    linear-gradient(135deg, #5edbee, #77f582);
   padding: 2rem 1rem;
 }
 
-.top {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.top h2 {
+.text-center {
+  font-size: 2rem;
   font-weight: bold;
-  color: #333;
-  font-size: 3rem;
-  margin: 0;
+  margin-bottom: 1.5rem;
 }
 
 .actions {
@@ -195,9 +182,6 @@ onMounted(fetchCvs);
   cursor: pointer;
 }
 
-/* Pesan & error */
-.message { margin-top: 1rem; color: green; }
-.error { color: red; }
 .loading { margin: 1rem 0; }
 
 /* Modal */

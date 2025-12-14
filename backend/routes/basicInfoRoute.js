@@ -4,8 +4,8 @@ import { getCvBasicInfoById, insertCvBasicInfo, updateCvBasicInfo} from '../cont
 
 const router = express.Router();
 
-router.get('/cv/:cvId/basic', authenticateToken, getCvBasicInfoById);
-router.post('/cv/:cvId/basic', authenticateToken, insertCvBasicInfo);
-router.put('/cv/:cvId/basic/:basicId', authenticateToken, updateCvBasicInfo);
+router.get('/:cvId', authenticateToken, getCvBasicInfoById);
+router.post('/:cvId', authenticateToken, insertCvBasicInfo);
+router.put('/:cvId/:basicId', authenticateToken, updateCvBasicInfo);
 
 export default router;
