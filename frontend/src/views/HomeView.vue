@@ -1,144 +1,49 @@
-<script>
-export default {
-  name: "Home"
-};
+<script setup>
 </script>
 
 <template>
-  <div class="home">
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="hero-content">
-        <h1>Selamat Datang di UASCV</h1>
-        <p>Platform Membuat CV.</p>
-
-        <div class="hero-buttons">
-          <router-link to="/auth/login" class="btn btn-primary">Login</router-link>
-          <router-link to="/auth/register" class="btn btn-primary">Register</router-link>
+  <div class="min-h-screen bg-white">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="text-2xl font-bold text-emerald-600 tracking-tight">UASCV.</div>
+            <div class="flex items-center gap-6">
+                <router-link to="/auth/login" class="text-gray-900 font-medium hover:text-emerald-600 transition">Masuk</router-link>
+                <router-link to="/auth/register" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-full font-semibold shadow-lg shadow-emerald-200 transition transform hover:-translate-y-0.5">
+                    Daftar Sekarang
+                </router-link>
+            </div>
         </div>
-      </div>
-    </section>
+    </nav>
 
-
-    <!-- Features Section -->
-    <section class="features">
-      <h2>Fitur Utama</h2>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <h3>CV</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <div class="pt-32 pb-20 px-6">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+                <div class="inline-block bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 border border-emerald-100">
+                    ✨ Buat CV dalam 5 Menit
+                </div>
+                <h1 class="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                    Karir Impian Dimulai <br>
+                    <span class="text-emerald-600">Dari Sini.</span>
+                </h1>
+                <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
+                    Platform pembuat CV otomatis yang membantu mahasiswa dan profesional mendapatkan pekerjaan dengan template standar industri.
+                </p>
+                <div class="flex gap-4">
+                    <router-link to="/auth/register" class="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-emerald-200 hover:bg-emerald-700 transition">
+                        Buat CV Gratis
+                    </router-link>
+                </div>
+            </div>
+            
+            <div class="relative hidden lg:block">
+                <div class="absolute -top-10 -right-10 w-72 h-72 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+                <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 relative transform rotate-2 hover:rotate-0 transition duration-500">
+                    <div class="h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400">
+                        Preview Template CV
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="feature-card">
-          <h3>AI</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </div>
-      </div>
-    </section>
+    </div>
   </div>
 </template>
-
-<style scoped>
-.home {
-  width: 100%;
-}
-
-/* Hero Section */
-.hero {
-  width: 100%;
-  min-height: 60vh;
-  display: flex;
-  justify-content: center;  /* tengah horizontal */
-  align-items: center;       /* tengah vertical */
-  background: linear-gradient(135deg, #5edbee, #77f582);
-}
-
-.hero-content {
-  text-align: center;
-  max-width: 600px;
-  padding: 2rem;
-  color: white;
-}
-
-.hero h1 {
-  font-size: 48px;
-  font-weight: 700;
-}
-
-.hero p {
-  font-size: 18px;
-  margin-top: 10px;
-  opacity: 0.9;
-}
-
-.hero-buttons {
-  margin-top: 30px;
-}
-
-.btn {
-  padding: 12px 28px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 16px;
-  margin: 0 10px;
-  transition: 0.25s ease;
-}
-
-.btn-primary {
-  background: white;
-  color: #47d152;
-  font-weight: bold;
-}
-
-.btn-primary:hover {
-  background: #e9ffeb;
-}
-
-.btn-outline {
-  border: 2px solid white;
-  color: white;
-}
-
-.btn-outline:hover {
-  background: white;
-  color: #5edbee;
-}
-
-/* Features Section */
-.features {
-  padding: 60px 20px 80px;
-}
-
-.features h2 {
-  font-size: 32px;
-  margin-bottom: 40px;
-  text-align: center;
-}
-
-.features-grid {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.feature-card {
-  background: #ffffff;
-  width: 280px;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: 0.25s ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-}
-
-.feature-card h3 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #47d152;
-}
-</style>

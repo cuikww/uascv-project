@@ -2,270 +2,130 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { getCv, updateCv } from "@/api/cv.js";
-import { getCvBasicInfoById, insertCvBasicInfo, updateCvBasicInfo } from "@/api/basic.js";
+import { getCvBasicInfoById, saveCvBasicInfo } from "@/api/basic.js";
 
 const route = useRoute();
 const cvId = route.params.cvId;
 
-// --- state CV ---
 const cvData = ref(null);
-const cvLoading = ref(false);
-
-// --- state Basic Info ---
-const basicInfo = ref(null);
-const basicInfoForm = ref({
-  phone_number: "",
-  linkedin_url: "",
-  github_url: "",
-  address: "",
-  city: "",
-  province: "",
-  country: "",
-  postal_code: "",
-  date_of_birth: "",
-  profile_summary: "",
-});
-const basicLoading = ref(false);
-
-// --- pesan ---
+const basicInfoForm = ref({});
+const saving = ref(false);
 const message = ref("");
 
-// --- ambil CV dan Basic Info ---
-const fetchCvDetail = async () => {
-  cvLoading.value = true;
-  try {
-    const res = await getCv(cvId);
-    cvData.value = res.data.data;
-
-    // Ambil basic info
+const fetchAll = async () => {
     try {
-      const basicRes = await getCvBasicInfoById(cvId);
-      basicInfo.value = basicRes.data.data;
-      basicInfoForm.value = { ...basicInfo.value };
-    } catch (err) {
-      if (err.response?.status === 404) {
-        // Belum ada basic info → form tetap kosong
-        basicInfo.value = null;
-        basicInfoForm.value = {};
-      } else {
-        console.error(err);
-        message.value = err.response?.data?.message || "Gagal memuat basic info";
-      }
+        const [cvRes, basicRes] = await Promise.all([
+            getCv(cvId),
+            getCvBasicInfoById(cvId)
+        ]);
+        cvData.value = cvRes.data.data;
+        if(basicRes.data.data) basicInfoForm.value = { ...basicRes.data.data };
+    } catch(err) { console.error(err); }
+};
+
+const handleSave = async () => {
+    saving.value = true;
+    message.value = "";
+    try {
+        // Save Status/Title
+        await updateCv(cvId, { title: cvData.value.title, status: cvData.value.status });
+        // Save Basic Info
+        await saveCvBasicInfo(cvId, basicInfoForm.value);
+        message.value = "Berhasil disimpan!";
+        setTimeout(() => message.value = "", 3000);
+    } catch(err) {
+        alert("Gagal menyimpan");
+    } finally {
+        saving.value = false;
     }
-  } catch (err) {
-    console.error(err);
-    message.value = err.response?.data?.message || "Gagal memuat CV";
-  } finally {
-    cvLoading.value = false;
-  }
-};
+}
 
-// --- update title / status ---
-const saveCvData = async () => {
-  if (!cvData.value) return;
-  try {
-    const res = await updateCv(cvId, {
-      title: cvData.value.title,
-      status: cvData.value.status,
-    });
-    cvData.value = res.data.data;
-    message.value = "CV berhasil diperbarui";
-  } catch (err) {
-    console.error(err);
-    message.value = err.response?.data?.message || "Gagal update CV";
-  }
-};
-
-// --- save basic info ---
-const saveBasicInfo = async () => {
-  basicLoading.value = true;
-  try {
-    if (basicInfo.value) {
-      // sudah ada → update
-      const res = await updateCvBasicInfo(cvId, basicInfo.value.id, basicInfoForm.value);
-      basicInfo.value = res.data.data;
-    } else {
-      // belum ada → insert
-      const res = await insertCvBasicInfo(cvId, basicInfoForm.value);
-      basicInfo.value = res.data.data;
-    }
-    message.value = "Basic info berhasil disimpan";
-  } catch (err) {
-    console.error(err);
-    message.value = err.response?.data?.message || "Gagal menyimpan basic info";
-  } finally {
-    basicLoading.value = false;
-  }
-};
-
-onMounted(fetchCvDetail);
+onMounted(fetchAll);
 </script>
 
 <template>
-  <div class="cv-detail">
-    <div class="top">
-      <router-link to="/onboarding" class="back-arrow">← Kembali</router-link>
-
-      <div v-if="cvLoading" class="loading">Loading CV...</div>
-      <div v-else-if="!cvData" class="not-found">CV tidak ditemukan</div>
-      <div v-else class="cv-header">
-        <!-- Title tampil seperti teks -->
-        <input v-model="cvData.title" class="title-input" />
-
-        <div class="status-row">
-          <label>Status</label>
-          <select v-model="cvData.status" class="status-select">
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-          </select>
-
-          <!-- Tombol save modern -->
-          <button @click="saveCvData" title="Simpan Status CV">
-            💾
-          </button>
+  <div class="min-h-screen bg-gray-50 pb-20">
+    <div class="bg-white border-b border-gray-200 h-16 flex justify-between items-center px-4 sm:px-6 sticky top-0 z-40 shadow-sm">
+        <router-link to="/onboarding" class="text-gray-500 hover:text-gray-900 font-medium flex items-center gap-2 transition">
+            <span>←</span> Kembali
+        </router-link>
+        <div class="flex items-center gap-3">
+            <span v-if="message" class="text-xs text-emerald-600 font-bold uppercase tracking-wide mr-2 animate-pulse">{{ message }}</span>
+            <button class="hidden sm:block px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Preview</button>
+            <button @click="handleSave" :disabled="saving" class="px-6 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 shadow-sm transition disabled:opacity-50">
+                {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
+            </button>
         </div>
-      </div>
     </div>
 
-    <hr />
+    <main v-if="cvData" class="max-w-4xl mx-auto py-8 px-4 sm:px-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="w-full max-w-md">
+                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Judul Dokumen</label>
+                <input v-model="cvData.title" type="text" class="text-2xl font-bold text-gray-900 w-full border-b border-transparent focus:border-emerald-500 outline-none pb-1 hover:border-gray-300 transition bg-transparent placeholder-gray-300" placeholder="Nama CV..." />
+            </div>
+            <div class="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+                <span class="text-sm font-semibold text-gray-600">Status:</span>
+                <select v-model="cvData.status" class="bg-transparent text-sm font-medium text-gray-900 outline-none cursor-pointer">
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                </select>
+            </div>
+        </div>
 
-    <h3>Basic Info</h3>
-    <div v-if="basicLoading" class="loading">Loading...</div>
-    <div v-else class="basic-info">
-      <label>Phone Number:</label>
-      <input v-model="basicInfoForm.phone_number" placeholder="Phone Number" />
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50/50 px-8 py-5 border-b border-gray-100">
+                <h2 class="text-lg font-bold text-emerald-800 flex items-center gap-2">
+                    👤 Informasi Dasar
+                </h2>
+            </div>
+            
+            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">No. Handphone</label>
+                    <input v-model="basicInfoForm.phone_number" type="text" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Lahir</label>
+                    <input v-model="basicInfoForm.date_of_birth" type="date" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-gray-600" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">LinkedIn URL</label>
+                    <input v-model="basicInfoForm.linkedin_url" type="text" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">GitHub URL</label>
+                    <input v-model="basicInfoForm.github_url" type="text" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" />
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat Lengkap</label>
+                    <input v-model="basicInfoForm.address" type="text" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" />
+                </div>
 
-      <label>LinkedIn:</label>
-      <input v-model="basicInfoForm.linkedin_url" placeholder="LinkedIn URL" />
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Kota</label>
+                    <input v-model="basicInfoForm.city" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-emerald-500 outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Provinsi</label>
+                    <input v-model="basicInfoForm.province" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-emerald-500 outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Negara</label>
+                    <input v-model="basicInfoForm.country" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-emerald-500 outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Kode Pos</label>
+                    <input v-model="basicInfoForm.postal_code" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-emerald-500 outline-none" />
+                </div>
 
-      <label>GitHub:</label>
-      <input v-model="basicInfoForm.github_url" placeholder="GitHub URL" />
-
-      <label>Address:</label>
-      <input v-model="basicInfoForm.address" placeholder="Address" />
-
-      <label>City:</label>
-      <input v-model="basicInfoForm.city" placeholder="City" />
-
-      <label>Province:</label>
-      <input v-model="basicInfoForm.province" placeholder="Province" />
-
-      <label>Country:</label>
-      <input v-model="basicInfoForm.country" placeholder="Country" />
-
-      <label>Postal Code:</label>
-      <input v-model="basicInfoForm.postal_code" placeholder="Postal Code" />
-
-      <label>Date of Birth:</label>
-      <input type="date" v-model="basicInfoForm.date_of_birth" />
-
-      <label>Profile Summary:</label>
-      <textarea v-model="basicInfoForm.profile_summary" placeholder="Profile Summary"></textarea>
-
-      <button @click="saveBasicInfo">💾 Save Basic Info</button>
-    </div>
-
-    <p v-if="message" class="message">{{ message }}</p>
+                <div class="md:col-span-2 mt-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ringkasan Profil</label>
+                    <textarea v-model="basicInfoForm.profile_summary" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition resize-none" placeholder="Ceritakan singkat pengalaman profesional Anda..."></textarea>
+                </div>
+            </div>
+        </div>
+    </main>
   </div>
 </template>
-
-<style scoped>
-.cv-detail {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 1rem;
-}
-
-.top {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.back-arrow {
-  text-decoration: none;
-  color: #3c9d5f;
-  font-weight: bold;
-}
-
-.cv-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.title-input {
-  font-size: 2rem;
-  text-align: center;
-  font-weight: bold;
-  border: none;
-  outline: none;
-  background: transparent;
-  width: 100%;
-  padding: 0;
-  margin-bottom: 0.5rem;
-}
-
-.title-input:focus {
-  border-bottom: 1px solid #5edbee;
-}
-
-.status-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.status-row label {
-  font-weight: bold;
-  color: #3c9d5f; /* hijau */
-}
-
-.status-select {
-  padding: 0.4rem 0.6rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
-  appearance: none; /* hilangkan tampilan default */
-  cursor: pointer;
-  height: 2rem; /* samakan tinggi tombol */
-}
-
-.status-select:focus {
-  border-color: #5edbee;
-  outline: none;
-}
-
-.basic-info h3 {
-  font-size: 1.6rem; /* perbesar tulisan Basic Info */
-  margin-bottom: 1rem;
-}
-
-.basic-info label {
-  font-weight: bold;
-  margin-top: 0.8rem;
-  display: block;
-  color: #3c9d5f; /* hijau */
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 0.4rem;
-  margin-top: 0.2rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.loading {
-  color: #888;
-}
-
-.not-found {
-  color: red;
-}
-</style>

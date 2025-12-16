@@ -5,10 +5,12 @@ import { createCvValidator } from '../validator/cvValidator.js';
 
 const router = express.Router();
 
-router.get('/cv/:cvId', authenticateToken, getCvById)
-router.get('/cv', authenticateToken, getMyCvs)
-router.post('/cv', authenticateToken, createCvValidator, createCv);
-router.put('/cv/:cvId', authenticateToken, updateCv);
-router.delete('/cv/:cvId', authenticateToken, deleteCv)
+// Hapus prefix '/cv' di sini karena di app.js nanti sudah didefinisikan parent-nya
+// RESTful Standard:
+router.get('/', authenticateToken, getMyCvs);           // GET /api/cvs
+router.post('/', authenticateToken, createCvValidator, createCv); // POST /api/cvs
+router.get('/:cvId', authenticateToken, getCvById);     // GET /api/cvs/:id
+router.put('/:cvId', authenticateToken, updateCv);      // PUT /api/cvs/:id
+router.delete('/:cvId', authenticateToken, deleteCv);   // DELETE /api/cvs/:id
 
 export default router;

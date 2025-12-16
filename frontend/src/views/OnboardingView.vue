@@ -2,215 +2,102 @@
 import { ref, onMounted } from "vue";
 import { getAllCv, createCv, deleteCv } from "@/api/cv.js";
 import { useRouter } from "vue-router";
+import NavbarDashboard from '@/components/NavbarDashboard.vue';
 
 const cvs = ref([]);
 const loading = ref(false);
-const error = ref(null);
-const message = ref("");
-
-// --- modal create CV ---
-const showCreateModal = ref(false);
-const careerLevel = ref("fresh_graduate");
 const creating = ref(false);
-
 const router = useRouter();
 
-// ambil semua CV
+// --- Logic API ---
 const fetchCvs = async () => {
   loading.value = true;
-  error.value = null;
   try {
     const res = await getAllCv();
     cvs.value = res.data.data;
   } catch (err) {
-    error.value = err.message || "Gagal mengambil CV";
+    console.error(err);
   } finally {
     loading.value = false;
   }
 };
 
-// buat CV baru
-const submitCreateCv = async () => {
-  creating.value = true;
-  try {
-    const res = await createCv({ career_level: careerLevel.value });
-    message.value = `CV berhasil dibuat (ID: ${res.data.cv_id})`;
-    showCreateModal.value = false;
-    await fetchCvs();
-  } catch (err) {
-    message.value = err.response?.data?.message || "Gagal membuat CV";
-  } finally {
-    creating.value = false;
-  }
-};
+const handleCreate = async () => {
+    creating.value = true;
+    try {
+        // Default template & level (Phase 1 logic)
+        await createCv({ career_level: 'fresh_graduate' }); 
+        await fetchCvs(); // Refresh list
+    } catch(err) {
+        alert("Gagal membuat CV");
+    } finally {
+        creating.value = false;
+    }
+}
 
-// hapus CV
-const removeCv = async (cvId) => {
-  if (!confirm("Apakah yakin ingin menghapus CV ini?")) return;
-  try {
-    await deleteCv(cvId);
-    message.value = "CV berhasil dihapus";
-    await fetchCvs();
-  } catch (err) {
-    message.value = err.response?.data?.message || "Gagal hapus CV";
-  }
-};
+const handleDelete = async (id) => {
+    if(!confirm("Yakin hapus?")) return;
+    try {
+        await deleteCv(id);
+        await fetchCvs();
+    } catch(err) {
+        alert("Gagal hapus");
+    }
+}
 
-// navigasi ke detail
-const goToDetail = (cvId) => {
-  router.push(`/basicdetails/${cvId}`);
-};
+const goToDetail = (id) => router.push(`/basicdetails/${id}`);
 
 onMounted(fetchCvs);
 </script>
 
 <template>
-  <div class="page-background">
-    <div class="text-center"><h2>Daftar CV</h2></div>
+  <div class="min-h-screen bg-gray-50">
+    <NavbarDashboard />
 
-    <div class="actions">
-      <button @click="showCreateModal = true">+</button>
-    </div>
-    
-    <div v-if="loading">Loading...</div>
-    <div v-else-if="error">{{ error }}</div>
-
-    <div v-else class="cv-grid">
-      <div v-for="cv in cvs" :key="cv.id" class="cv-card">
-        <h3>{{ cv.title }}</h3>
-        <p>Status: <strong>{{ cv.status }}</strong></p>
-        <p>Level: {{ cv.career_level }}</p>
-        <div class="card-actions">
-          <button @click="goToDetail(cv.id)">Update</button>
-          <button @click="removeCv(cv.id)">Delete</button>
+    <main class="p-4 sm:p-8 max-w-6xl mx-auto">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">CV Saya</h1>
+                <p class="text-gray-500 mt-1">Kelola dan edit daftar riwayat hidup Anda.</p>
+            </div>
+            <button @click="handleCreate" :disabled="creating" class="bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-emerald-700 shadow-md flex items-center gap-2 transition disabled:opacity-50">
+                <span class="text-xl leading-none">+</span> {{ creating ? 'Membuat...' : 'Buat CV Baru' }}
+            </button>
         </div>
-      </div>
-    </div>
 
-    <!-- Modal Create -->
-    <div v-if="showCreateModal" class="modal-overlay">
-      <div class="modal">
-        <h3>Pilih Career Level</h3>
-        <select v-model="careerLevel">
-          <option value="fresh_graduate">Fresh Graduate</option>
-          <option value="professional">Professional</option>
-        </select>
-        <div class="modal-actions">
-          <button @click="submitCreateCv" :disabled="creating">Buat</button>
-          <button @click="showCreateModal = false">Batal</button>
+        <div v-if="loading" class="text-center py-20 text-gray-500">Memuat data CV...</div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div v-for="cv in cvs" :key="cv.id" class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition group relative overflow-hidden flex flex-col justify-between">
+                <div :class="['absolute top-0 left-0 w-1 h-full', cv.status === 'published' ? 'bg-emerald-500' : 'bg-gray-300']"></div>
+                
+                <div>
+                    <div class="flex justify-between items-start mb-3 pl-2">
+                        <span :class="['px-2.5 py-1 text-xs font-bold rounded uppercase', cv.status === 'published' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600']">
+                            {{ cv.status }}
+                        </span>
+                        <button @click.stop="handleDelete(cv.id)" class="text-gray-400 hover:text-red-500 p-1 rounded hover:bg-red-50 transition z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                    </div>
+                    <h3 class="pl-2 text-lg font-bold text-gray-900 mb-1 group-hover:text-emerald-600 transition truncate">{{ cv.title || 'Tanpa Judul' }}</h3>
+                    <p class="pl-2 text-sm text-gray-500 mb-6">Level: {{ cv.career_level === 'fresh_graduate' ? 'Fresh Graduate' : 'Profesional' }}</p>
+                </div>
+
+                <button @click="goToDetail(cv.id)" class="w-full border border-gray-300 text-gray-700 font-medium py-2 rounded-lg hover:border-emerald-500 hover:text-emerald-600 transition bg-white">
+                    Edit Detail
+                </button>
+            </div>
+
+            <button @click="handleCreate" class="border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center p-6 text-gray-400 hover:border-emerald-500 hover:text-emerald-500 hover:bg-emerald-50/50 transition h-full min-h-[220px]">
+                <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3 group-hover:bg-emerald-100 transition">
+                    <span class="text-2xl font-light">+</span>
+                </div>
+                <span class="font-medium">Tambah CV Baru</span>
+            </button>
+
         </div>
-      </div>
-    </div>
+    </main>
   </div>
 </template>
-
-<style scoped>
-.page-background {
-  flex-direction: column; 
-  justify-content: flex-start;
-  padding: 2rem 1rem;
-}
-
-.text-center {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-}
-
-.actions {
-  width: 100%;
-  max-width: 1000px;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-}
-
-.actions button {
-  width: 50px;
-  height: 50px;
-  font-size: 1.5rem;
-  font-weight: bold;
-  border-radius: 50%;
-  border: none;
-  background-color: #333;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.actions button:hover {
-  background-color: #84b48e;
-}
-
-/* Grid untuk daftar CV */
-.cv-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  width: 100%;
-  max-width: 1000px;
-}
-
-.cv-card {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.cv-card h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
-}
-
-.cv-card p {
-  margin: 0.3rem 0;
-}
-
-.card-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-}
-
-.card-actions button {
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.loading { margin: 1rem 0; }
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background-color: rgba(0,0,0,0.5);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.modal {
-  background-color:white;
-  padding:1.5rem;
-  border-radius:0.5rem;
-  min-width:300px;
-}
-.modal-actions {
-  margin-top:1rem;
-  display:flex;
-  justify-content:flex-end;
-  gap:0.5rem;
-}
-input, select {
-  width:100%;
-  padding:0.4rem;
-  margin-top:0.5rem;
-}
-</style>

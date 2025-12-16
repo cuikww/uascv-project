@@ -1,13 +1,12 @@
+// src/api/basic.js
 import apiClient from './axios';
 
+// Ambil data
 export const getCvBasicInfoById = (cvId) => {
-    return apiClient.get(`/basicdetails/${cvId}`);
+    return apiClient.get(`/cv-details/${cvId}`);
 };
 
-export const insertCvBasicInfo = (cvId, data) => {
-    return apiClient.post(`/basicdetails/${cvId}`, data);
-};
-
-export const updateCvBasicInfo = (cvId, basicId, data) => {
-    return apiClient.post(`/basicdetails/${cvId}/${basicId}`, data);
+// Simpan data (Backend pakai Upsert, jadi Insert/Update digabung)
+export const saveCvBasicInfo = (cvId, data) => {
+    return apiClient.put(`/cv-details/${cvId}`, data);
 };
