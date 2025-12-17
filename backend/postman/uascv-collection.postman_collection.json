@@ -305,6 +305,51 @@
           }
         }
       ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Generate Experience Description",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position\": \"Software Engineer\",\n  \"company\": \"Company ABC\",\n  \"keywords\": \"Node.js, Express, SQL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/experience",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","ai","experience"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Professional Summary",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullname\": \"Test User\",\n  \"jobTitle\": \"Frontend Developer\",\n  \"keywords\": \"Vue.js, Tailwind, UI\",\n  \"experience_level\": \"Menengah\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","ai","summary"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [

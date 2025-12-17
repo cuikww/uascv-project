@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import EditorLayout from '@/components/EditorLayout.vue';
 import { getMasterData, addMasterItem, updateMasterItem, deleteMasterItem } from '@/api/master.js';
 import { getCvFullContent, toggleItemInCv } from '@/api/cv.js';
+import { generateExperienceDesc } from '@/api/ai.js';
 
 const route = useRoute();
 const cvId = route.params.cvId;
@@ -13,9 +14,18 @@ const selectedIds = ref(new Set());
 const showModal = ref(false);
 const loading = ref(false);
 
-// State untuk Mode Edit
 const isEditing = ref(false);
 const editingId = ref(null);
+
+const aiLoading = ref(false); 
+const aiKeywords = ref('');
+
+// [BARU] State untuk menyimpan Context Target Lamaran
+const targetContext = ref({
+    job: '',
+    company: '',
+    desc: ''
+});
 
 const form = ref({
     position: '', company: '', location: '', start_date: '', end_date: '', current: false, description: ''
@@ -27,24 +37,31 @@ const fetchData = async () => {
             getMasterData('experiences'),
             getCvFullContent(cvId)
         ]);
+        
+        // 1. Setup Master Data & Checkbox
         allExperiences.value = masterRes.data.data;
         const linked = cvRes.data.sections.experiences || [];
         selectedIds.value = new Set(linked.map(i => i.id));
+
+        // 2. [BARU] Ambil Data Target Lamaran dari CV Info
+        // Backend harus mengembalikan object cv_info yang berisi target_job_title, dll.
+        const cvInfo = cvRes.data.cv_info || {};
+        targetContext.value = {
+            job: cvInfo.target_job_title || '',
+            company: cvInfo.target_company_name || '',
+            desc: cvInfo.target_job_description || ''
+        };
+
     } catch (err) { console.error(err); }
 };
 
-// [BARU] Fungsi Buka Modal Edit
 const handleEdit = (item) => {
     isEditing.value = true;
     editingId.value = item.id;
-    
-    // Copy data item ke form (gunakan spread operator agar reaktifitas aman)
     form.value = { ...item }; 
-    
     showModal.value = true;
 };
 
-// [BARU] Fungsi Buka Modal Tambah (Reset Form)
 const openAddModal = () => {
     isEditing.value = false;
     editingId.value = null;
@@ -57,13 +74,10 @@ const handleSave = async () => {
     loading.value = true;
     try {
         if (isEditing.value) {
-            // [LOGIC UPDATE]
             await updateMasterItem('experiences', editingId.value, form.value);
         } else {
-            // [LOGIC CREATE]
             await addMasterItem('experiences', form.value);
         }
-        
         showModal.value = false;
         await fetchData();
     } catch(err) { alert('Gagal menyimpan'); } 
@@ -84,6 +98,41 @@ const handleDelete = async (id) => {
         fetchData();
     }
 }
+
+const handleGenerateAI = async () => {
+    if (!form.value.position) {
+        alert("Mohon isi Posisi/Jabatan terlebih dahulu agar AI tahu konteksnya.");
+        return;
+    }
+    if (!aiKeywords.value) {
+        alert("Mohon isi keywords, contoh: 'Vue.js, Team Lead, Optimasi API'");
+        return;
+    }
+
+    aiLoading.value = true;
+    try {
+        const res = await generateExperienceDesc({
+            // Data Input Pengalaman
+            position: form.value.position,
+            company: form.value.company || 'Perusahaan Umum',
+            keywords: aiKeywords.value,
+            
+            // [BARU] Kirim Context Target Lamaran ke Backend
+            target_job: targetContext.value.job,
+            target_company: targetContext.value.company,
+            target_desc: targetContext.value.desc
+        });
+
+        const generatedText = res.data.result;
+        form.value.description = generatedText; 
+        
+    } catch (err) {
+        console.error(err);
+        alert("Gagal generate AI. Cek koneksi backend.");
+    } finally {
+        aiLoading.value = false;
+    }
+};
 
 onMounted(fetchData);
 </script>
@@ -147,7 +196,49 @@ onMounted(fetchData);
                     <div><label class="block text-sm font-bold text-gray-700 mb-1">Mulai *</label><input v-model="form.start_date" type="date" class="w-full px-4 py-2 border rounded-lg"></div>
                     <div><label class="block text-sm font-bold text-gray-700 mb-1">Selesai</label><input v-model="form.end_date" :disabled="form.current" type="date" class="w-full px-4 py-2 border rounded-lg disabled:bg-gray-100"></div>
                     <div class="col-span-2"><label class="flex items-center gap-2"><input v-model="form.current" type="checkbox" class="w-4 h-4 text-emerald-600 rounded"><span>Masih bekerja di sini</span></label></div>
-                    <div class="col-span-2"><label class="block text-sm font-bold text-gray-700 mb-1">Deskripsi</label><textarea v-model="form.description" rows="4" class="w-full px-4 py-3 border rounded-lg resize-none" placeholder="Deskripsi pekerjaan..."></textarea></div>
+
+                    <div class="col-span-2 bg-emerald-50 border border-emerald-100 p-4 rounded-xl mb-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold text-emerald-800 flex items-center gap-1">
+                                ✨ AI GENERATOR <span class="bg-white text-emerald-600 px-1.5 py-0.5 rounded text-[10px] border border-emerald-200">BETA</span>
+                            </label>
+
+                            <span v-if="targetContext.job" class="text-[10px] text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-bold border border-emerald-200">
+                                🎯 Konteks: {{ targetContext.job }}
+                            </span>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <input 
+                                v-model="aiKeywords"
+                                type="text" 
+                                placeholder="Keywords: Vue.js, Team Lead, Optimasi..." 
+                                class="flex-1 px-3 py-2 text-sm border border-emerald-200 rounded-lg focus:ring-1 focus:ring-emerald-500 outline-none bg-white"
+                                @keyup.enter="handleGenerateAI"
+                            >
+                            <button 
+                                @click="handleGenerateAI" 
+                                :disabled="aiLoading"
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition disabled:opacity-50"
+                            >
+                                <span v-if="aiLoading" class="animate-spin">⏳</span>
+                                {{ aiLoading ? 'Generating...' : 'Generate' }}
+                            </button>
+                        </div>
+                        <p v-if="!targetContext.job" class="text-[10px] text-orange-500 mt-1 italic">
+                            * Tips: Isi "Target Lamaran" di menu Info Dasar agar hasil AI lebih spesifik & ringkas.
+                        </p>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Deskripsi Pekerjaan</label>
+                        <textarea 
+                            v-model="form.description" 
+                            rows="6" 
+                            class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-slate-50 text-sm leading-relaxed" 
+                            placeholder="Hasil generate AI akan muncul di sini..."
+                        ></textarea>
+                    </div>
                 </div>
             </div>
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">

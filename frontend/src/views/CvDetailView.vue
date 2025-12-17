@@ -8,20 +8,38 @@ import EditorLayout from '@/components/EditorLayout.vue';
 const route = useRoute();
 const cvId = route.params.cvId;
 
-const cvData = ref({ title: '', status: 'draft', template: 'modern' });
+// [UPDATE] Tambahkan field target lamaran di inisialisasi ref
+const cvData = ref({ 
+    title: '', 
+    status: 'draft', 
+    template: 'modern',
+    target_job_title: '',
+    target_company_name: '',
+    target_job_description: ''
+});
+
 const profileForm = ref({});
 const saving = ref(false);
 const message = ref("");
 
 const fetchAll = async () => {
     try {
-        // 1. Ambil Data CV (Judul, Status)
+        // 1. Ambil Data CV (Judul, Status, Target Lamaran)
         const cvRes = await getCvFullContent(cvId);
-        cvData.value = cvRes.data.cv_info; // Perhatikan struktur response dari backend
+        // Pastikan mapping data benar
+        const data = cvRes.data.cv_info;
+        cvData.value = {
+            title: data.title,
+            status: data.status,
+            template: data.template,
+            target_job_title: data.target_job_title || '',
+            target_company_name: data.target_company_name || '',
+            target_job_description: data.target_job_description || ''
+        };
 
         // 2. Ambil Data Profil Master User
         const profileRes = await getMasterProfile();
-        profileForm.value = profileRes.data.data;
+        profileForm.value = profileRes.data.data || {};
     } catch(err) { console.error(err); }
 };
 
@@ -29,11 +47,14 @@ const handleSave = async () => {
     saving.value = true;
     message.value = "";
     try {
-        // Simpan Metadata CV
+        // [UPDATE] Kirim data target lamaran saat update metadata
         await updateCvMetadata(cvId, { 
             title: cvData.value.title, 
             status: cvData.value.status,
-            template: cvData.value.template 
+            template: cvData.value.template,
+            target_job_title: cvData.value.target_job_title,
+            target_company_name: cvData.value.target_company_name,
+            target_job_description: cvData.value.target_job_description
         });
 
         // Simpan Profil Master (Berlaku untuk semua CV)
@@ -65,6 +86,7 @@ onMounted(fetchAll);
 
     <div class="h-full overflow-y-auto p-8 pb-32">
         <div class="max-w-4xl mx-auto">
+            
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div class="w-full max-w-md">
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Judul Dokumen</label>
@@ -79,10 +101,40 @@ onMounted(fetchAll);
                 </div>
             </div>
 
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition">
+                    <span class="text-6xl grayscale">🎯</span>
+                </div>
+                
+                <div class="flex items-center gap-2 mb-4">
+                    <h2 class="text-lg font-bold text-gray-800">🎯 Target Lamaran</h2>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide border border-emerald-200">Konteks AI</span>
+                </div>
+                
+                <p class="text-sm text-gray-500 mb-5 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    ℹ️ <b>Tips:</b> Isi bagian ini agar fitur <b>AI Generator</b> di menu Pengalaman & Ringkasan bisa menyesuaikan isinya secara spesifik dengan lowongan yang Anda incar.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Posisi yang Dilamar</label>
+                        <input v-model="cvData.target_job_title" type="text" placeholder="Contoh: Senior Backend Engineer" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition bg-white" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama Perusahaan Tujuan</label>
+                        <input v-model="cvData.target_company_name" type="text" placeholder="Contoh: GoTo, Traveloka, Google" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition bg-white" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Deskripsi / Kualifikasi Lowongan</label>
+                        <textarea v-model="cvData.target_job_description" rows="3" placeholder="Paste kualifikasi pekerjaan dari job portal di sini... (AI akan menggunakan ini untuk mencocokkan skill Anda)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none text-sm leading-relaxed transition bg-white"></textarea>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="bg-gray-50/50 px-8 py-5 border-b border-gray-100 flex justify-between items-center">
                     <h2 class="text-lg font-bold text-emerald-800 flex items-center gap-2">👤 Kontak & Profil</h2>
-                    <span class="text-xs text-orange-500 font-medium bg-orange-50 px-2 py-1 rounded border border-orange-100">Master Data (Sync ke semua CV)</span>
+                    <span class="text-xs text-orange-600 font-bold bg-orange-50 px-2 py-1 rounded border border-orange-200">Sync Master Data</span>
                 </div>
                 
                 <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -98,7 +150,11 @@ onMounted(fetchAll);
                     <div><label class="block text-xs font-semibold text-gray-500 mb-1">Negara</label><input v-model="profileForm.country" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-emerald-500 outline-none" /></div>
                     <div><label class="block text-xs font-semibold text-gray-500 mb-1">Kode Pos</label><input v-model="profileForm.postal_code" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-emerald-500 outline-none" /></div>
 
-                    <div class="md:col-span-2 mt-2"><label class="block text-sm font-semibold text-gray-700 mb-2">Ringkasan Profil</label><textarea v-model="profileForm.profile_summary" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none resize-none" placeholder="Ceritakan singkat pengalaman profesional Anda..."></textarea></div>
+                    <div class="md:col-span-2 mt-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ringkasan Profil (Master)</label>
+                        <textarea v-model="profileForm.profile_summary" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none resize-none" placeholder="Ceritakan singkat pengalaman profesional Anda..."></textarea>
+                        <p class="text-xs text-gray-400 mt-1 italic">*Ringkasan ini bersifat umum. Gunakan menu 'Ringkasan' di sidebar untuk ringkasan spesifik per CV.</p>
+                    </div>
                 </div>
             </div>
         </div>

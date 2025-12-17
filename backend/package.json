@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/genai": "^1.34.0",
     "@supabase/supabase-js": "^2.87.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -22,7 +23,7 @@
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11",
-    "newman": "^5.1.0"
+    "newman": "^5.1.0",
+    "nodemon": "^3.1.11"
   }
 }

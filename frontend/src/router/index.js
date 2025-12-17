@@ -13,6 +13,8 @@ import EducationView from '../views/editor/EducationView.vue';
 import ExperienceView from '../views/editor/ExperienceView.vue';
 import SkillsView from '../views/editor/SkillsView.vue';
 
+import SummaryView from '@/views/editor/SummaryView.vue';
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -71,7 +73,13 @@ const router = createRouter({
       name: 'skills',
       component: SkillsView,
       meta: { title: 'Keahlian | UASCV', requiresAuth: true }
-    }
+    },
+    { 
+    path: '/editor/:cvId/summary', 
+    component: SummaryView, 
+    meta: { requiresAuth: true } 
+}
+    
   ],
 })
 

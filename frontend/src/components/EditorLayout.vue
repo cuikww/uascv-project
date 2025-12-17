@@ -37,6 +37,11 @@
                 :class="['flex items-center gap-3 px-3 py-2.5 rounded-lg transition whitespace-nowrap', isActive('skills') ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-100' : 'text-gray-600 hover:bg-gray-50']">
                 <span>⚡</span> Keahlian
             </router-link>
+
+            <router-link :to="`/editor/${cvId}/summary`" 
+                :class="['flex items-center gap-3 px-3 py-2.5 rounded-lg transition whitespace-nowrap', isActive('summary') ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-100' : 'text-gray-600 hover:bg-gray-50']">
+                <span>📝</span> Ringkasan
+            </router-link>
         </div>
     </aside>
 
