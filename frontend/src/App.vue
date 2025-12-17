@@ -1,9 +1,7 @@
 <script setup>
+// Kosongkan script, kita tidak butuh logika global di sini
 </script>
 
 <template>
-  <div>
-    <Navbar />
-    <router-view />
-  </div>
+  <router-view />
 </template>

@@ -1,195 +1,184 @@
 import supabase from '../config/supabase.js';
-import { validationResult } from 'express-validator';
+import { LINK_TABLE_MAP, TABLE_MAP } from '../utils/helpers.js';
 
-export const getCvById = async (req, res) => {
+export const getCvFullContent = async (req, res) => {
+    const { cvId } = req.params;
+    const userId = req.user.id;
+
     try {
-        const userId = req.user.id;
-        const { cvId } = req.params;
-
-        const { data, error } = await supabase
+        // A. Ambil Info Dasar CV (Pastikan milik user)
+        const { data: cv, error: cvError } = await supabase
             .from('cvs')
             .select('*')
             .eq('id', cvId)
             .eq('user_id', userId)
             .single();
-        
-        if (error || !data) {
-            return res.status(404).json({
-                message: 'CV not found'
-            })
+
+        if (cvError || !cv) return res.status(404).json({ message: "CV not found" });
+
+        // B. Ambil Master Data yang TERHUBUNG ke CV ini
+        // Menggunakan teknik Inner Join via Link Table
+        const { data: educations } = await supabase
+            .from('master_educations')
+            .select('*, cv_education_links!inner(cv_id)')
+            .eq('cv_education_links.cv_id', cvId)
+            .order('start_date', { ascending: false });
+
+        const { data: experiences } = await supabase
+            .from('master_experiences')
+            .select('*, cv_experience_links!inner(cv_id)')
+            .eq('cv_experience_links.cv_id', cvId)
+            .order('start_date', { ascending: false });
+
+        const { data: skills } = await supabase
+            .from('master_skills')
+            .select('*, cv_skill_links!inner(cv_id)')
+            .eq('cv_skill_links.cv_id', cvId);
+
+        res.json({ 
+            cv_info: cv, 
+            sections: { educations, experiences, skills } 
+        });
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+export const toggleItemInCv = async (req, res) => {
+    const { cvId } = req.params;
+    const { section, itemId } = req.body;
+    const userId = req.user.id;
+
+    const linkConfig = LINK_TABLE_MAP[section];
+    if (!linkConfig) return res.status(400).json({ message: "Invalid section" });
+
+    try {
+        // Validasi: Pastikan CV milik user
+        const { data: cv } = await supabase.from('cvs').select('id').eq('id', cvId).eq('user_id', userId).single();
+        if (!cv) return res.status(403).json({ message: "Access denied to this CV" });
+
+        // Cek apakah item sudah ada di CV ini?
+        const { data: exists, error } = await supabase
+            .from(linkConfig.table)
+            .select('*')
+            .eq('cv_id', cvId)
+            .eq(linkConfig.fk_master, itemId)
+            .single();
+
+        if (exists) {
+            // JIKA ADA -> HAPUS (Unlink)
+            await supabase
+                .from(linkConfig.table)
+                .delete()
+                .eq('cv_id', cvId)
+                .eq(linkConfig.fk_master, itemId);
+            
+            res.json({ message: "Item removed from CV", status: 'removed' });
+        } else {
+            // JIKA TIDAK ADA -> TAMBAH (Link)
+            await supabase
+                .from(linkConfig.table)
+                .insert([{ cv_id: cvId, [linkConfig.fk_master]: itemId }]);
+                
+            res.json({ message: "Item added to CV", status: 'added' });
         }
 
-        return res.status(200).json({
-            data
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-}
-
-export const getMyCvs = async (req, res) => {
-    try {
-        const userId = req.user.id;
-
-        const { data, error } = await supabase
-            .from('cvs')
-            .select('*')
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false });
-        
-        if (error) throw error;
-
-        return res.status(200).json({
-            data
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
-}
-
+};
 
 export const createCv = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-    return res.status(400).json({
-        message: 'Invalid input',
-        errors: errors.array()
-    });
-    }
-
+    const userId = req.user.id;
     try {
-        const userId = req.user.id;
-        const { career_level } = req.body;
-
-        // 3. mapping template berdasarkan career level
-        // const templateMap = {
-        //   fresh_graduate: 'edu_first',
-        //   professional: 'exp_first'
-        // };
-
-        // const template = templateMap[career_level];
-        const template = 'default';
-
-        // 4. insert CV
-        const { data: cv, error } = await supabase
+        const { data, error } = await supabase
             .from('cvs')
-            .insert({
-                user_id: userId,
-                career_level,
-                template
-            })
+            .insert([{ 
+                user_id: userId, 
+                title: req.body.title || 'Untitled CV',
+                template: 'modern' 
+            }])
             .select()
             .single();
 
         if (error) throw error;
+        res.status(201).json({ message: "CV Created", data });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 
-        // 5. auto create section default
-        // const sectionsByCareer = {
-        //   fresh_graduate: [
-        //     { section_type: 'basic_info', position: 1 },
-        //     { section_type: 'education', position: 2 },
-        //     { section_type: 'skills', position: 3 },
-        //     { section_type: 'projects', position: 4 }
-        //   ],
-        //   professional: [
-        //     { section_type: 'basic_info', position: 1 },
-        //     { section_type: 'experience', position: 2 },
-        //     { section_type: 'projects', position: 3 },
-        //     { section_type: 'skills', position: 4 }
-        //   ]
-        // };
+export const getAllCvs = async (req, res) => {
+    const userId = req.user.id;
 
-        // const sections = sectionsByCareer[career_level]
-        //   .map(s => ({
-        //     cv_id: cv.id,
-        //     ...s
-        //   }));
+    try {
+        const { data, error } = await supabase
+            .from('cvs')
+            .select('*')
+            .eq('user_id', userId) // Security: Cuma ambil punya user sendiri
+            .order('updated_at', { ascending: false }); // Yang baru diedit paling atas
 
-        // await supabase
-        //   .from('cv_sections')
-        //   .insert(sections);
-
-        // 6. response
-        return res.status(201).json({
-            message: 'CV created',
-            cv_id: cv.id
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+        if (error) throw error;
+        res.json({ data });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
 
 export const updateCv = async (req, res) => {
+    const { cvId } = req.params;
+    const userId = req.user.id;
+    const updates = req.body;
+
     try {
-        const userId = req.user.id;
-        const { cvId } = req.params;
-        const { title, template, status } = req.body;
+        // 1. Sanitasi: Cegah user mengubah ID atau Owner secara paksa
+        delete updates.id;
+        delete updates.user_id;
+        delete updates.created_at;
 
-        const { data: cv, error: cvError } = await supabase
-            .from('cvs')
-            .select('id')
-            .eq('id', cvId)
-            .eq('user_id', userId)
-            .single();
-        
-        if (!cv) return res.status(404).json({ message: "CV not found" });
+        // 2. Tambahkan timestamp update
+        updates.updated_at = new Date();
 
-        // Update
+        // 3. Update ke Database
         const { data, error } = await supabase
             .from('cvs')
-            .update({
-                title,
-                template,
-                status,
-                updated_at: new Date()
-            })
+            .update(updates)
             .eq('id', cvId)
+            .eq('user_id', userId) // Security: Pastikan update punya sendiri
             .select()
             .single();
+
+        if (error) throw error;
         
+        // Jika data kosong, berarti CV tidak ditemukan atau bukan milik user ini
+        if (!data) return res.status(404).json({ message: "CV tidak ditemukan atau akses ditolak" });
+
+        res.json({ message: "CV berhasil diperbarui", data });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+export const deleteCv = async (req, res) => {
+    const { cvId } = req.params;
+    const userId = req.user.id;
+
+    try {
+        const { error, count } = await supabase
+            .from('cvs')
+            .delete({ count: 'exact' }) // Minta info jumlah baris yang dihapus
+            .eq('id', cvId)
+            .eq('user_id', userId); // Security: Cuma bisa hapus punya sendiri
+
         if (error) throw error;
 
-        return res.status(200).json({
-            message: "CV updated",
-            data
-        })
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
+        // Jika count 0, artinya ID tidak ditemukan atau bukan milik user
+        if (count === 0) {
+            return res.status(404).json({ message: "CV tidak ditemukan atau akses ditolak" });
+        }
+
+        res.json({ message: "CV berhasil dihapus" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-}
-
-export const deleteCv = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { cvId } = req.params;
-
-        const { error } = await supabase
-            .from('cvs')
-            .delete()
-            .eq('id', cvId)
-            .eq('user_id', userId);
-        
-        if (error) throw error
-
-        return res.status(200).json({
-            message: 'CV deleted'
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
-}
+};
