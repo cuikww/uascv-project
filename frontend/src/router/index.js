@@ -14,6 +14,7 @@ import ExperienceView from '../views/editor/ExperienceView.vue';
 import SkillsView from '../views/editor/SkillsView.vue';
 
 import SummaryView from '@/views/editor/SummaryView.vue';
+import PreviewView from '@/views/editor/PreviewView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,12 +75,18 @@ const router = createRouter({
       component: SkillsView,
       meta: { title: 'Keahlian | UASCV', requiresAuth: true }
     },
-    { 
-    path: '/editor/:cvId/summary', 
-    component: SummaryView, 
-    meta: { requiresAuth: true } 
-}
-    
+    {
+      path: '/editor/:cvId/summary',
+      component: SummaryView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/editor/:cvId/preview',
+      name: 'preview',
+      component: PreviewView,
+      meta: { title: 'Preview & Export | UASCV', requiresAuth: true }
+    }
+
   ],
 })
 
@@ -87,7 +94,7 @@ router.beforeEach((to) => {
   document.title = to.meta.title || 'UASCV'
 
   if (to.meta.requiresAuth && !isLoggedIn.value) {
-    return { path: "/auth/login"};
+    return { path: "/auth/login" };
   }
 })
 

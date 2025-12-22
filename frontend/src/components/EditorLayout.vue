@@ -42,6 +42,11 @@
                 :class="['flex items-center gap-3 px-3 py-2.5 rounded-lg transition whitespace-nowrap', isActive('summary') ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-100' : 'text-gray-600 hover:bg-gray-50']">
                 <span>📝</span> Ringkasan
             </router-link>
+
+            <router-link :to="`/editor/${cvId}/preview`" 
+                :class="['flex items-center gap-3 px-3 py-2.5 rounded-lg transition whitespace-nowrap', isActive('preview') ? 'bg-emerald-50 text-emerald-700 font-bold border border-emerald-100' : 'text-gray-600 hover:bg-gray-50']">
+                <span>👁️</span> Preview & Export
+            </router-link>
         </div>
     </aside>
 

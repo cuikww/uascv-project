@@ -130,7 +130,8 @@
                   "var json = pm.response.json();",
                   "if (json.data && json.data.length > 0) {",
                   "    pm.environment.set('cvId', json.data[0].id || json.data[0].cv_id);",
-                  "}"]
+                  "}"
+                ]
               }
             }
           ]
@@ -155,8 +156,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/cvs",
-              "host": ["{{baseUrl}}"],
-              "path": ["cvs"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs"
+              ]
             }
           },
           "event": [
@@ -177,9 +182,21 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
-            "url": { "raw": "{{baseUrl}}/cvs/{{cvId}}", "host": ["{{baseUrl}}"], "path": ["cvs","{{cvId}}"] }
+            "url": {
+              "raw": "{{baseUrl}}/cvs/{{cvId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs",
+                "{{cvId}}"
+              ]
+            }
           }
         },
         {
@@ -187,19 +204,51 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
-            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated Title\",\n  \"status\": \"draft\"\n}" },
-            "url": { "raw": "{{baseUrl}}/cvs/{{cvId}}", "host": ["{{baseUrl}}"], "path": ["cvs","{{cvId}}"] }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"status\": \"draft\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cvs/{{cvId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs",
+                "{{cvId}}"
+              ]
+            }
           }
         },
         {
           "name": "Delete CV",
           "request": {
             "method": "DELETE",
-            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
-            "url": { "raw": "{{baseUrl}}/cvs/{{cvId}}", "host": ["{{baseUrl}}"], "path": ["cvs","{{cvId}}"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cvs/{{cvId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs",
+                "{{cvId}}"
+              ]
+            }
           }
         }
       ]
@@ -211,8 +260,23 @@
           "name": "Get CV Full Content",
           "request": {
             "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
-            "url": { "raw": "{{baseUrl}}/cvs/{{cvId}}/full", "host": ["{{baseUrl}}"], "path": ["cvs","{{cvId}}","full"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cvs/{{cvId}}/full",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs",
+                "{{cvId}}",
+                "full"
+              ]
+            }
           }
         }
       ]
@@ -224,9 +288,31 @@
           "name": "Toggle Item In CV",
           "request": {
             "method": "POST",
-            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
-            "body": { "mode": "raw", "raw": "{\n  \"section\": \"educations\",\n  \"itemId\": \"{{itemId}}\"\n}" },
-            "url": { "raw": "{{baseUrl}}/cvs/{{cvId}}/toggle", "host": ["{{baseUrl}}"], "path": ["cvs","{{cvId}}","toggle"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section\": \"educations\",\n  \"itemId\": \"{{itemId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cvs/{{cvId}}/toggle",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs",
+                "{{cvId}}",
+                "toggle"
+              ]
+            }
           }
         }
       ]
@@ -236,51 +322,321 @@
       "item": [
         {
           "name": "List Educations",
-          "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/master/educations", "host": ["{{baseUrl}}"], "path": ["master","educations"] } }
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/master/educations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "educations"
+              ]
+            }
+          }
         },
         {
           "name": "Add Education",
-          "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"institution\": \"University X\",\n  \"start_date\": \"2020-01-01\",\n  \"end_date\": \"2024-01-01\",\n  \"current\": false\n}" }, "url": { "raw": "{{baseUrl}}/master/educations", "host": ["{{baseUrl}}"], "path": ["master","educations"] } }
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institution\": \"University X\",\n  \"start_date\": \"2020-01-01\",\n  \"end_date\": \"2024-01-01\",\n  \"current\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/master/educations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "educations"
+              ]
+            }
+          }
         },
         {
           "name": "Update Education",
-          "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"institution\": \"University X (Updated)\"\n}" }, "url": { "raw": "{{baseUrl}}/master/educations/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["master","educations","{{itemId}}"] } }
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institution\": \"University X (Updated)\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/master/educations/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "educations",
+                "{{itemId}}"
+              ]
+            }
+          }
         },
         {
           "name": "Delete Education",
-          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/master/educations/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["master","educations","{{itemId}}"] } }
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/master/educations/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "educations",
+                "{{itemId}}"
+              ]
+            }
+          }
         },
         {
           "name": "List Experiences",
-          "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/master/experiences", "host": ["{{baseUrl}}"], "path": ["master","experiences"] } }
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/master/experiences",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "experiences"
+              ]
+            }
+          }
         },
         {
           "name": "Add Experience",
-          "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"company\": \"Company X\",\n  \"position\": \"Developer\",\n  \"start_date\": \"2021-01-01\",\n  \"end_date\": \"2023-01-01\"\n}" }, "url": { "raw": "{{baseUrl}}/master/experiences", "host": ["{{baseUrl}}"], "path": ["master","experiences"] } }
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"Company X\",\n  \"position\": \"Developer\",\n  \"start_date\": \"2021-01-01\",\n  \"end_date\": \"2023-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/master/experiences",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "experiences"
+              ]
+            }
+          }
         },
         {
           "name": "Update Experience",
-          "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"position\": \"Senior Developer\"\n}" }, "url": { "raw": "{{baseUrl}}/master/experiences/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["master","experiences","{{itemId}}"] } }
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position\": \"Senior Developer\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/master/experiences/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "experiences",
+                "{{itemId}}"
+              ]
+            }
+          }
         },
         {
           "name": "Delete Experience",
-          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/master/experiences/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["master","experiences","{{itemId}}"] } }
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/master/experiences/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "experiences",
+                "{{itemId}}"
+              ]
+            }
+          }
         },
         {
           "name": "List Skills",
-          "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/master/skills", "host": ["{{baseUrl}}"], "path": ["master","skills"] } }
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/master/skills",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "skills"
+              ]
+            }
+          }
         },
         {
           "name": "Add Skill",
-          "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"skill_name\": \"JavaScript\",\n  \"level\": \"Intermediate\"\n}" }, "url": { "raw": "{{baseUrl}}/master/skills", "host": ["{{baseUrl}}"], "path": ["master","skills"] } }
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skill_name\": \"JavaScript\",\n  \"level\": \"Intermediate\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/master/skills",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "skills"
+              ]
+            }
+          }
         },
         {
           "name": "Update Skill",
-          "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"level\": \"Advanced\"\n}" }, "url": { "raw": "{{baseUrl}}/master/skills/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["master","skills","{{itemId}}"] } }
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"level\": \"Advanced\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/master/skills/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "skills",
+                "{{itemId}}"
+              ]
+            }
+          }
         },
         {
           "name": "Delete Skill",
-          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{baseUrl}}/master/skills/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["master","skills","{{itemId}}"] } }
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/master/skills/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "master",
+                "skills",
+                "{{itemId}}"
+              ]
+            }
+          }
         }
       ]
     },
@@ -291,17 +647,50 @@
           "name": "Get My Profile",
           "request": {
             "method": "GET",
-            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
-            "url": { "raw": "{{baseUrl}}/profiles", "host": ["{{baseUrl}}"], "path": ["profiles"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/profiles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "profiles"
+              ]
+            }
           }
         },
         {
           "name": "Save Profile",
           "request": {
             "method": "PUT",
-            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
-            "body": { "mode": "raw", "raw": "{\n  \"fullname\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"phone_number\": \"+62123456789\",\n  \"city\": \"City\",\n  \"country\": \"Indonesia\",\n  \"profile_summary\": \"Short bio here.\",\n  \"linkedin_url\": \"https://linkedin.com/in/test\",\n  \"github_url\": \"https://github.com/test\"\n}" },
-            "url": { "raw": "{{baseUrl}}/profiles", "host": ["{{baseUrl}}"], "path": ["profiles"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullname\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"phone_number\": \"+62123456789\",\n  \"city\": \"City\",\n  \"country\": \"Indonesia\",\n  \"profile_summary\": \"Short bio here.\",\n  \"linkedin_url\": \"https://linkedin.com/in/test\",\n  \"github_url\": \"https://github.com/test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/profiles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "profiles"
+              ]
+            }
           }
         }
       ]
@@ -314,17 +703,28 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"position\": \"Software Engineer\",\n  \"company\": \"Company ABC\",\n  \"keywords\": \"Node.js, Express, SQL\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/ai/experience",
-              "host": ["{{baseUrl}}"],
-              "path": ["api","ai","experience"]
+              "raw": "{{baseUrl}}/ai/experience",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "experience"
+              ]
             }
           },
           "response": []
@@ -334,17 +734,59 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"fullname\": \"Test User\",\n  \"jobTitle\": \"Frontend Developer\",\n  \"keywords\": \"Vue.js, Tailwind, UI\",\n  \"experience_level\": \"Menengah\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/ai/summary",
-              "host": ["{{baseUrl}}"],
-              "path": ["api","ai","summary"]
+              "raw": "{{baseUrl}}/ai/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "summary"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Style Config",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Saya ingin tampilan CV yang modern, elegan, berwarna biru tua, cocok untuk melamar ke perusahaan teknologi startup.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/style",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ai",
+                "style"
+              ]
             }
           },
           "response": []

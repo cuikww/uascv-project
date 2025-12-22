@@ -7,3 +7,7 @@ export const generateExperienceDesc = (payload) => {
 export const generateSummary = (payload) => {
     return apiClient.post('/ai/summary', payload);
 };
+
+export const generateStyle = (payload) => {
+    return apiClient.post('/ai/style', payload);
+};
