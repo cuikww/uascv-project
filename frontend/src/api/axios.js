@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL); // Debugging
 const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
     headers: {
@@ -8,7 +7,6 @@ const apiClient = axios.create({
     },
 });
 
-// Interceptor untuk menyisipkan Token otomatis
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -23,7 +21,6 @@ apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            // Token expired atau invalid
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             window.location.href = '/auth/login';

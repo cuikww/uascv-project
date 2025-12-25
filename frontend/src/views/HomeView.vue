@@ -1,4 +1,15 @@
 <script setup>
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { isLoggedIn } from '@/stores/auth';
+
+const router = useRouter();
+
+onMounted(() => {
+    if (isLoggedIn.value) {
+        router.push('/onboarding');
+    }
+});
 </script>
 
 <template>
