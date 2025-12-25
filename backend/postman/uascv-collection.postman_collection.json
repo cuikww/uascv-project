@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "uascv-backend-collection",
-    "_postman_id": "uascv-collection",
-    "description": "Postman collection for uascv backend (local). Includes auth, cvs, cv-details, and cv-sections with scripts to store token/cvId/itemId.",
+    "name": "UASCV Backend - Complete Collection",
+    "_postman_id": "uascv-collection-complete",
+    "description": "Complete Postman collection for UASCV backend. Includes: Auth, CVs, Master Data, Profile, AI, and Job Tracker. Uses single environment with auto-variable management.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -788,6 +788,409 @@
                 "style"
               ]
             }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Job Tracker",
+      "item": [
+        {
+          "name": "Get All Job Applications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker"
+              ]
+            },
+            "description": "Retrieve all job applications for the authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job Applications by Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has status groups', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('wishlist');",
+                  "    pm.expect(jsonData).to.have.property('applied');",
+                  "    pm.expect(jsonData).to.have.property('interview');",
+                  "    pm.expect(jsonData).to.have.property('offer');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/by-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "by-status"
+              ]
+            },
+            "description": "Get all job applications grouped by status (wishlist, applied, interview, offer, rejected, accepted)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job Application Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has stats', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('total');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "stats"
+              ]
+            },
+            "description": "Get statistics of job applications by status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Job Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has required fields', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('company_name');",
+                  "    pm.expect(jsonData).to.have.property('position_title');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/{{appId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "{{appId}}"
+              ]
+            },
+            "description": "Retrieve a specific job application by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Job Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has created application', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.company_name).to.equal('Google');",
+                  "    pm.expect(jsonData.position_title).to.equal('Software Engineer');",
+                  "    pm.environment.set('appId', jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Google\",\n  \"position_title\": \"Software Engineer\",\n  \"status\": \"wishlist\",\n  \"cv_id\": \"{{cvId}}\",\n  \"job_description\": \"We are looking for a talented software engineer to join our team. You will work on solving complex problems and building scalable systems.\",\n  \"job_url\": \"https://careers.google.com/jobs/results/\",\n  \"company_location\": \"Jakarta\",\n  \"work_mode\": \"hybrid\",\n  \"job_type\": \"full-time\",\n  \"salary_range\": \"15-20 juta\",\n  \"difficulty_level\": \"high\",\n  \"notes\": \"Saw this on LinkedIn, looks interesting. Requires 3+ years experience.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker"
+              ]
+            },
+            "description": "Create a new job application. company_name and position_title are required."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Job Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Application updated', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.company_name).to.equal('Google');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Google\",\n  \"position_title\": \"Senior Software Engineer\",\n  \"status\": \"applied\",\n  \"cv_id\": \"{{cvId}}\",\n  \"job_description\": \"Updated description\",\n  \"job_url\": \"https://careers.google.com/jobs/results/\",\n  \"company_location\": \"Jakarta\",\n  \"work_mode\": \"hybrid\",\n  \"job_type\": \"full-time\",\n  \"salary_range\": \"20-25 juta\",\n  \"applied_date\": \"2024-12-24\",\n  \"difficulty_level\": \"high\",\n  \"notes\": \"Updated notes after phone screening\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/{{appId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "{{appId}}"
+              ]
+            },
+            "description": "Update an existing job application with all details"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Job Application Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Status updated', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('interview');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"interview\",\n  \"interview_date\": \"2024-12-25T14:00:00\",\n  \"interview_location\": \"Google Meet\",\n  \"interview_type\": \"video\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/{{appId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "{{appId}}",
+                "status"
+              ]
+            },
+            "description": "Update the status of a job application. Valid statuses: wishlist, applied, interview, offer, rejected, accepted"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Job Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Deletion confirmed', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.include('deleted');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/{{appId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "{{appId}}"
+              ]
+            },
+            "description": "Delete a job application by ID"
           },
           "response": []
         }

@@ -7,6 +7,7 @@ import masterRoute from './routes/masterRoute.js';
 import cvRoute from './routes/cvRoute.js';
 import profileRoute from './routes/profileRoute.js';
 import aiRoute from './routes/aiRoute.js';
+import jobTrackerRoute from './routes/jobTrackerRoute.js';
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/api/profiles', profileRoute);
 app.use('/api/master', masterRoute); 
 app.use('/api/cvs', cvRoute);
 app.use('/api/ai', aiRoute);
+app.use('/api/job-tracker', jobTrackerRoute);
 app.get('/', (req, res) => {
     res.json({ message: 'Backend is Running!' });
 });

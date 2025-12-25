@@ -16,6 +16,9 @@ import SkillsView from '../views/editor/SkillsView.vue';
 import SummaryView from '@/views/editor/SummaryView.vue';
 import PreviewView from '@/views/editor/PreviewView.vue';
 
+// Phase 3 Views (Job Tracker)
+import JobTrackerView from '@/views/JobTrackerView.vue';
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -85,6 +88,14 @@ const router = createRouter({
       name: 'preview',
       component: PreviewView,
       meta: { title: 'Preview & Export | UASCV', requiresAuth: true }
+    },
+
+    // --- JOB TRACKER (PHASE 3) ---
+    {
+      path: '/job-tracker',
+      name: 'jobTracker',
+      component: JobTrackerView,
+      meta: { title: 'Job Tracker | UASCV', requiresAuth: true }
     }
 
   ],

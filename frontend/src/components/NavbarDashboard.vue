@@ -41,9 +41,25 @@ const logout = () => {
 
 <template>
   <nav class="bg-white border-b border-gray-200 px-4 sm:px-8 h-16 flex justify-between items-center sticky top-0 z-30">
-    <router-link to="/onboarding" class="font-bold text-xl text-emerald-600 tracking-tight flex items-center gap-1">
-      UASCV.<span class="text-gray-400 font-normal text-sm">Dashboard</span>
-    </router-link>
+    <div class="flex items-center gap-6">
+      <router-link to="/onboarding" class="font-bold text-xl text-emerald-600 tracking-tight flex items-center gap-1">
+        UASCV.
+      </router-link>
+      
+      <!-- Navigation Shortcuts -->
+      <div class="hidden md:flex items-center gap-2 ml-4 pl-4 border-l border-gray-200">
+        <router-link 
+          to="/onboarding" 
+          class="text-sm text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 px-3 py-1 rounded-lg transition font-medium">
+          CV Management
+        </router-link>
+        <router-link 
+          to="/job-tracker" 
+          class="text-sm text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 px-3 py-1 rounded-lg transition font-medium">
+          Job Tracker
+        </router-link>
+      </div>
+    </div>
     
     <div class="flex items-center gap-4">
         <div class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition group">
