@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoute);
 app.use('/api/profiles', profileRoute);
-app.use('/api/master', masterRoute); 
+app.use('/api/master', masterRoute);
 app.use('/api/cvs', cvRoute);
 app.use('/api/ai', aiRoute);
 app.use('/api/job-tracker', jobTrackerRoute);
@@ -27,6 +27,10 @@ app.get('/', (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+
+export default app;
