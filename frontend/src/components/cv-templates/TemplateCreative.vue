@@ -17,7 +17,7 @@ const cssVars = computed(() => ({
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-row font-sans overflow-hidden" :style="cssVars">
+  <div class="w-full h-full flex flex-row font-sans" :style="cssVars">
     <aside class="w-[35%] bg-[var(--primary)] text-white p-8 flex flex-col gap-8 shrink-0">
       <div class="text-center">
         <div class="w-24 h-24 bg-white/20 mx-auto rounded-full flex items-center justify-center text-3xl font-bold border-2 border-white/30 mb-4 backdrop-blur-sm">
@@ -44,9 +44,9 @@ const cssVars = computed(() => ({
 
       <div v-if="sections.skills.length">
         <h3 class="text-xs font-bold uppercase tracking-widest text-white/60 mb-4 border-b border-white/20 pb-1">Keahlian</h3>
-        <div class="flex flex-wrap gap-2">
-          <span v-for="skill in sections.skills" :key="skill.name" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-default">
-            {{ skill.name }}
+        <div class="flex flex-wrap gap-x-2 gap-y-1 text-sm text-white/90">
+          <span v-for="(skill, index) in sections.skills" :key="skill.name">
+            {{ skill.name }}<span v-if="index < sections.skills.length - 1" class="text-white/40 ml-2">•</span>
           </span>
         </div>
       </div>
@@ -65,7 +65,7 @@ const cssVars = computed(() => ({
       
       <section v-if="cvInfo.summary">
         <h2 class="text-xl font-bold text-[var(--primary)] mb-3 flex items-center gap-2">
-           <span class="text-2xl">❝</span> Ringkasan
+             Ringkasan
         </h2>
         <p class="text-sm leading-relaxed text-gray-600 italic border-l-4 border-gray-100 pl-4 py-1">
             {{ cvInfo.summary }}
@@ -75,31 +75,24 @@ const cssVars = computed(() => ({
       <section v-if="sections.experiences.length" class="flex-1">
         <h2 class="text-lg font-bold text-gray-800 uppercase tracking-widest border-b-2 border-gray-100 pb-2 mb-6 flex items-center justify-between">
             Pengalaman Kerja
-            <span class="text-[var(--primary)] text-2xl leading-none">💼</span>
         </h2>
 
         <div v-for="exp in sections.experiences" :key="exp.id" class="mb-8 relative group">
-             <div class="absolute -left-3 top-1.5 w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-[var(--primary)] transition"></div>
              
              <div class="flex justify-between items-start mb-1">
                  <h3 class="font-bold text-gray-900 text-lg group-hover:text-[var(--primary)] transition">{{ exp.position }}</h3>
-                 <span class="text-xs font-bold text-gray-400 border border-gray-200 px-2 py-0.5 rounded">
+                 <span class="text-xs font-bold text-gray-400">
                     {{ new Date(exp.start_date).getFullYear() }} - {{ exp.current ? 'Now' : new Date(exp.end_date).getFullYear() }}
                  </span>
              </div>
              
              <div class="text-sm font-semibold text-gray-500 mb-3">{{ exp.company }}</div>
              
-             <table class="w-full border-collapse">
-                <tbody>
-                    <tr v-for="(line, idx) in splitLines(exp.description)" :key="idx">
-                        <td class="align-top w-4 pr-1 pt-[6px]">
-                             <div class="h-1.5 w-1.5 rounded-full bg-[var(--primary)] bg-opacity-80"></div>
-                        </td>
-                        <td class="align-top text-sm text-gray-600 leading-relaxed pb-1.5">{{ line }}</td>
-                    </tr>
-                </tbody>
-             </table>
+             <div class="text-sm text-gray-600 space-y-1">
+                <div v-for="(line, idx) in splitLines(exp.description)" :key="idx" class="leading-relaxed">
+                     {{ line }}
+                </div>
+             </div>
         </div>
       </section>
     </main>

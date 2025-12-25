@@ -62,14 +62,11 @@ const cssVars = computed(() => ({
                 </div>
                 <div class="text-sm italic text-gray-500 mb-2 font-serif">{{ exp.company }}</div>
                 
-                <table class="w-full border-collapse">
-                    <tbody>
-                        <tr v-for="(line, idx) in splitLines(exp.description)" :key="idx">
-                            <td class="align-top w-4 pr-1 pt-0 text-gray-400 select-none">•</td>
-                            <td class="align-top text-sm text-gray-700 leading-relaxed pb-1">{{ line }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="text-sm text-gray-700 space-y-1">
+                    <div v-for="(line, idx) in splitLines(exp.description)" :key="idx" class="leading-relaxed">
+                        {{ line }}
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -91,8 +88,7 @@ const cssVars = computed(() => ({
                     Keahlian
                 </h2>
                 <div class="flex flex-wrap gap-x-4 gap-y-2">
-                    <span v-for="skill in sections.skills" :key="skill.name" class="text-sm font-medium text-gray-700 relative pl-3">
-                        <span class="absolute left-0 top-1.5 w-1 h-1 bg-[var(--primary)] rounded-full"></span>
+                    <span v-for="skill in sections.skills" :key="skill.name" class="text-sm font-medium text-gray-700">
                         {{ skill.name }}
                     </span>
                 </div>

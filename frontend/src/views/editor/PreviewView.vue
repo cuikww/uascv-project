@@ -281,10 +281,18 @@ const downloadPdf = async () => {
     msg.value = "Generating PDF...";
     
     const canvas = await html2canvas(element, {
-        scale: 2, // Retain high quality
+        scale: 3, 
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        windowWidth: 794, 
+        windowHeight: 1120, 
+        scrollX: 0,
+        scrollY: 0,
+        allowTaint: false,
+        foreignObjectRendering: false,
+        letterRendering: true, // Improve text alignment
+        dpi: 300 // High resolution
     });
     
     const imgData = canvas.toDataURL('image/jpeg', 1.0);
@@ -546,7 +554,14 @@ const presetColors = [
 }
 @media print {
   body * { visibility: hidden; }
-  #cv-preview, #cv-preview * { visibility: visible; }
+  #cv-preview ul, #cv-preview li {
+  line-height: 1.5 !important;
+}
+/* Native Bullet Coloring */
+#cv-preview ul.list-disc > li::marker {
+  color: var(--primary);
+  font-size: 1.2em;
+}
   #cv-preview {
     position: absolute;
     left: 0;

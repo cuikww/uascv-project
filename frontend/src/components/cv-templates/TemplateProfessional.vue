@@ -29,7 +29,7 @@ const getSkillScore = (level) => {
 </script>
 
 <template>
-  <div class="w-full h-full bg-white font-sans text-gray-800 flex flex-col overflow-hidden" :style="cssVars">
+  <div class="w-full h-full bg-white font-sans text-gray-800 flex flex-col" :style="cssVars">
     
     <header class="bg-[var(--primary)] text-white p-8 pb-10 shrink-0">
       <div class="flex justify-between items-start">
@@ -93,16 +93,11 @@ const getSkillScore = (level) => {
                         </span>
                     </div>
 
-                    <table class="w-full border-collapse">
-                        <tbody>
-                            <tr v-for="(line, idx) in splitLines(exp.description)" :key="idx">
-                                <td class="align-top w-4 pr-1 pt-[4px]">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] opacity-70"></div>
-                                </td>
-                                <td class="align-top text-sm text-gray-700 leading-relaxed pb-1">{{ line }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="text-sm text-gray-700 space-y-1">
+                        <div v-for="(line, idx) in splitLines(exp.description)" :key="idx" class="leading-relaxed">
+                            {{ line }}
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -124,21 +119,11 @@ const getSkillScore = (level) => {
                     Keahlian
                 </h3>
                 <div class="flex flex-col gap-2">
-                    <div v-for="skill in sections.skills" :key="skill.name" class="flex items-center justify-between group">
-                        <div class="flex flex-col mr-2 overflow-hidden">
-                            <span class="text-sm font-medium text-gray-700 truncate" title="{{ skill.name }}">{{ skill.name }}</span>
-                        </div>
-                        <div class="flex gap-1.5 shrink-0">
-                            <div v-for="i in 4" :key="i" 
-                                :class="[
-                                    'w-2 h-2 rounded-full transition-all duration-300 shrink-0', /* Tambahkan shrink-0 di sini */
-                                    i <= getSkillScore(skill.level) 
-                                        ? 'bg-[var(--primary)] opacity-100' 
-                                        : 'bg-gray-200 opacity-50'
-                                ]"
-                            ></div>
-                        </div>
+                <div class="flex flex-col gap-1">
+                    <div v-for="skill in sections.skills" :key="skill.name" class="text-sm font-medium text-gray-700">
+                        {{ skill.name }}
                     </div>
+                </div>
                 </div>
             </section>
         </aside>
