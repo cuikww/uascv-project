@@ -7,7 +7,7 @@ const props = defineProps({
   settings: { type: Object, default: () => ({}) }
 });
 
-const splitLines = (text) => text ? text.split('\n').filter(Boolean) : [];
+const splitLines = (text) => text ? text.split('\n').filter(Boolean).map(l => l.replace(/^[\s•\-\*]+/, '').trim()) : [];
 
 const cssVars = computed(() => ({
   '--primary': props.settings.primary || '#111827', // Default hitam/gelap
@@ -62,9 +62,14 @@ const cssVars = computed(() => ({
                 </div>
                 <div class="text-sm italic text-gray-500 mb-2 font-serif">{{ exp.company }}</div>
                 
-                <p v-for="(line, idx) in splitLines(exp.description)" :key="idx" class="text-sm text-gray-700 leading-relaxed mb-1">
-                   • {{ line }}
-                </p>
+                <table class="w-full border-collapse">
+                    <tbody>
+                        <tr v-for="(line, idx) in splitLines(exp.description)" :key="idx">
+                            <td class="align-top w-4 pr-1 pt-0 text-gray-400 select-none">•</td>
+                            <td class="align-top text-sm text-gray-700 leading-relaxed pb-1">{{ line }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 

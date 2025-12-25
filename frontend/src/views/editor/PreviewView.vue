@@ -101,12 +101,20 @@ const fetchData = async () => {
 
       // Ambil nama skill
       let name = "";
+      // Cek di root object dulu
       const candidates = ["name", "skill_name", "skill", "title"];
       for (const k of candidates) {
           if (s[k]) { name = s[k]; break; }
       }
       
+      // Jika tidak ketemu di root, cek di master_skill (relation)
+      if (!name && s.master_skill && s.master_skill.skill_name) {
+          name = s.master_skill.skill_name;
+      }
+      
       const level = s.level || (s.master_skill ? s.master_skill.level : 'Intermediate');
+
+      if (!name) return null; // Jika masih tidak ada nama, skip
 
       return {
           id: s.id,
@@ -125,15 +133,37 @@ const fetchData = async () => {
     try {
       const p = await getMasterProfile();
       profile.value = p.data.data || {};
+      
+      // ... (existing profile mapping) ...
       if (!cvInfo.value.user_name && profile.value.fullname) cvInfo.value.user_name = profile.value.fullname;
       if (!cvInfo.value.email && profile.value.email) cvInfo.value.email = profile.value.email;
       const parts = [profile.value.address, profile.value.city, profile.value.country].filter(Boolean);
       if (parts.length) cvInfo.value.location = parts.join(", ");
-      
-      if ((!sections.value.skills || !sections.value.skills.length) && profile.value.skills) {
-         sections.value.skills = profile.value.skills.map((s) => typeof s === "string" ? { name: s } : s);
+
+      // Fallback Summary
+      if (!cvInfo.value.summary && profile.value.profile_summary) {
+          cvInfo.value.summary = profile.value.profile_summary;
       }
     } catch (e) { console.warn(e); }
+      
+      // Fallback Skills: Jika tidak ada skills di CV, dan tidak ada di profile (karena getMasterProfile cuma table profiles)
+      // Kita coba ambil dari master_skills endpoint (opsional, jika Anda punya API getMasterSkills)
+      // Atau, jika profile.value.skills memang ada (mungkin dari join?), kita pake itu.
+      // TAPI: berdasarkan controller, getProfile cuma select * from profiles. Jadi profile.value.skills KEMUNGKINAN undefined.
+      
+      if (!sections.value.skills || !sections.value.skills.length) {
+         // Coba fetch master skills
+         try {
+             const { getMasterData } = await import("@/api/master.js"); 
+             const resSkills = await getMasterData('skills');
+             if(resSkills.data && resSkills.data.data) {
+                 sections.value.skills = resSkills.data.data.map(s => ({
+                     name: s.skill_name, 
+                     level: s.level || 'Intermediate'
+                 }));
+             }
+         } catch(e) { console.warn("Fallback fetch skills failed", e); }
+      }
 
     if (cvInfo.value?.template) selectTemplateLocal(cvInfo.value.template);
     applyStyleToDocument();
@@ -241,50 +271,54 @@ const downloadPdf = async () => {
 
   // 1. Simpan state awal
   const originalZoom = zoomPercent.value;
-  
-  // 2. MATIKAN TRANSISI (PENTING! Agar tidak ada animasi pergeseran saat reset zoom)
-  wrapper.classList.remove("transition-all", "duration-200", "ease-out");
-  
-  // 3. Reset Zoom ke 100% agar resolusi tajam & layout pas
   zoomPercent.value = 100;
-  
-  // 4. Tunggu DOM update
   await nextTick();
 
-  // Opsi PDF standar A4
-  const opt = {
-    margin: 0,
-    filename: `${(cvInfo.value?.title || "MyCV").replace(/\s+/g, "_")}.pdf`,
-    image: { type: "jpeg", quality: 1.0 },
-    html2canvas: { 
-        scale: 2, // Resolusi 2x biar tajam
-        useCORS: true,
-        letterRendering: true,
-        scrollY: 0,
-    },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-  };
-
   try {
-    const mod = await import("html2pdf.js");
-    const html2pdf = mod && mod.default ? mod.default : window.html2pdf || mod;
+    const { default: html2canvas } = await import('html2canvas');
+    const { jsPDF } = await import('jspdf');
     
     msg.value = "Generating PDF...";
-    await html2pdf().set(opt).from(element).save();
+    
+    const canvas = await html2canvas(element, {
+        scale: 2, // Retain high quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+    });
+    
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    // First page
+    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    // Add new pages if content overflows
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+
+    pdf.save(`${(cvInfo.value?.user_name || "CV").replace(/\s+/g, "_")}.pdf`);
     msg.value = "Download Berhasil";
+    
   } catch (err) {
     console.error(err);
     alert("Gagal download PDF");
   } finally {
-    // 5. Kembalikan Zoom user
     zoomPercent.value = originalZoom;
     await nextTick();
-
-    // 6. NYALAKAN KEMBALI TRANSISI (Sedikit delay biar gak loncat)
-    setTimeout(() => {
-        wrapper.classList.add("transition-all", "duration-200", "ease-out");
-    }, 100);
-    
     setTimeout(() => (msg.value = ""), 2000);
   }
 };
@@ -303,6 +337,7 @@ const presetColors = [
     '#db2777', // Pink
     '#4b5563', // Neutral Gray
 ];
+
 </script>
 
 <template>

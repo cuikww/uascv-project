@@ -7,7 +7,7 @@ const props = defineProps({
   settings: { type: Object, default: () => ({}) }
 });
 
-const splitLines = (text) => text ? text.split('\n').filter(Boolean) : [];
+const splitLines = (text) => text ? text.split('\n').filter(Boolean).map(l => l.replace(/^[\s•\-\*]+/, '').trim()) : [];
 
 const cssVars = computed(() => ({
   '--primary': props.settings.primary || '#0f766e', // Default Teal/Hijau Tua profesional
@@ -93,11 +93,16 @@ const getSkillScore = (level) => {
                         </span>
                     </div>
 
-                    <ul class="list-disc list-outside ml-4 text-sm text-gray-700 space-y-1">
-                        <li v-for="(line, idx) in splitLines(exp.description)" :key="idx" class="pl-1">
-                            {{ line }}
-                        </li>
-                    </ul>
+                    <table class="w-full border-collapse">
+                        <tbody>
+                            <tr v-for="(line, idx) in splitLines(exp.description)" :key="idx">
+                                <td class="align-top w-4 pr-1 pt-[4px]">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-[var(--primary)] opacity-70"></div>
+                                </td>
+                                <td class="align-top text-sm text-gray-700 leading-relaxed pb-1">{{ line }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </main>

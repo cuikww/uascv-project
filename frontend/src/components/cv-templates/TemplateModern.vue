@@ -7,7 +7,7 @@ const props = defineProps({
   settings: { type: Object, default: () => ({}) }
 });
 
-const splitLines = (text) => text ? text.split('\n').filter(Boolean) : [];
+const splitLines = (text) => text ? text.split('\n').filter(Boolean).map(l => l.replace(/^[\s•\-\*]+/, '').trim()) : [];
 
 const cssVars = computed(() => ({
   '--primary': props.settings.primary || '#006894',
@@ -44,7 +44,7 @@ const cssVars = computed(() => ({
       <div v-if="sections.skills.length">
         <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3 border-b pb-1">Keahlian</h3>
         <div class="flex flex-wrap gap-2">
-          <span v-for="skill in sections.skills" :key="skill.name" class="bg-white border border-gray-300 px-2 py-1 rounded text-xs font-bold text-[var(--primary)] shadow-sm">
+          <span v-for="skill in sections.skills" :key="skill.name" class="bg-white border border-gray-300 px-3 py-1.5 rounded text-xs font-bold text-[var(--primary)] shadow-sm inline-flex items-center justify-center min-h-[28px]">
             {{ skill.name }}
           </span>
         </div>
@@ -97,9 +97,16 @@ const cssVars = computed(() => ({
              
              <div class="text-sm font-semibold text-[var(--primary)] mb-2">{{ exp.company }}</div>
              
-             <ul class="list-disc list-outside ml-4 text-sm text-gray-600 space-y-1">
-                <li v-for="(line, idx) in splitLines(exp.description)" :key="idx">{{ line }}</li>
-             </ul>
+             <table class="w-full border-collapse">
+                <tbody>
+                    <tr v-for="(line, idx) in splitLines(exp.description)" :key="idx">
+                        <td class="align-top w-4 pr-1 pt-[2px]">
+                            <div class="w-1.5 h-1.5 rounded-full bg-gray-500"></div>
+                        </td>
+                        <td class="align-top text-sm text-gray-600 leading-relaxed pb-1">{{ line }}</td>
+                    </tr>
+                </tbody>
+             </table>
         </div>
       </section>
 

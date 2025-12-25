@@ -7,7 +7,7 @@ const props = defineProps({
   settings: { type: Object, default: () => ({}) }
 });
 
-const splitLines = (text) => text ? text.split('\n').filter(Boolean) : [];
+const splitLines = (text) => text ? text.split('\n').filter(Boolean).map(l => l.replace(/^[\s•\-\*]+/, '').trim()) : [];
 
 const cssVars = computed(() => ({
   '--primary': props.settings.primary || '#9b5de5', // Default ungu untuk creative
@@ -90,11 +90,16 @@ const cssVars = computed(() => ({
              
              <div class="text-sm font-semibold text-gray-500 mb-3">{{ exp.company }}</div>
              
-             <ul class="list-none space-y-1.5 text-sm text-gray-600">
-                <li v-for="(line, idx) in splitLines(exp.description)" :key="idx" class="flex items-start gap-2">
-                    <span class="text-[var(--primary)] mt-1.5 text-[6px]">●</span> {{ line }}
-                </li>
-             </ul>
+             <table class="w-full border-collapse">
+                <tbody>
+                    <tr v-for="(line, idx) in splitLines(exp.description)" :key="idx">
+                        <td class="align-top w-4 pr-1 pt-[6px]">
+                             <div class="h-1.5 w-1.5 rounded-full bg-[var(--primary)] bg-opacity-80"></div>
+                        </td>
+                        <td class="align-top text-sm text-gray-600 leading-relaxed pb-1.5">{{ line }}</td>
+                    </tr>
+                </tbody>
+             </table>
         </div>
       </section>
     </main>
