@@ -112,35 +112,35 @@ Struktur database relasional yang digunakan dalam aplikasi ini.
 ## 📸 Galeri Screenshot
 
 ### 1. Halaman Utama (Landing Page)
-Halaman depan yang menyambut pengguna.
+Halaman depan yang menyambut pengguna dengan desain modern dan informatif. Menampilkan ringkasan fitur unggulan aplikasi seperti pembuatan CV dengan AI dan berbagai pilihan template menarik. Terdapat tombol akses cepat untuk mendaftar atau masuk ke dalam akun pengguna.
 ![Landing Page](Screenshots/root.png)
 
-### 2. Onboarding & Login
-Proses masuk ke dalam sistem.
+### 2. Onboarding & Dashboard
+Halaman utama setelah login berfungsi sebagai pusat kontrol pengguna. Di sini, Anda dapat melihat daftar riwayat hidup (CV) yang telah dibuat, status terakhirnya, dan tombol untuk membuat CV baru. Halaman ini dirancang agar pengguna dapat dengan mudah mengelola banyak versi CV untuk berbagai lamaran kerja.
 ![Onboarding](Screenshots/onBoarding.png)
 
-### 3. Dashboard
-Pusat pengelolaan CV dan Job Tracker.
-![Dashboard](Screenshots/basicDetails.png)
+### 3. Info Dasar (Basic Details)
+Formulir pengisian data diri utama yang menjadi fondasi dari setiap CV. Pengguna dapat melengkapi informasi vital seperti Nama Lengkap, Email, Nomor Telepon, dan Tautan LinkedIn. Data ini dapat disinkronisasi dari Master Data sehingga tidak perlu diisi ulang untuk setiap CV baru.
+![Info Dasar](Screenshots/basicDetails.png)
 
 ### 4. Edit Pendidikan
-Formulir untuk menambah riwayat pendidikan.
+Bagian ini memungkinkan pengguna untuk menambahkan latar belakang pendidikan formal maupun non-formal. Formulir mencakup detail institusi, gelar, jurusan, serta periode waktu pendidikan. Pengguna dapat menambahkan lebih dari satu riwayat pendidikan sesuai kebutuhan.
 ![Pendidikan](Screenshots/pendidikan.png)
 
 ### 5. Edit Pengalaman Kerja
-Formulir pengalaman kerja dengan bantuan AI.
+Fitur unggulan di mana pengguna dapat mendeskripsikan pengalaman kerja mereka. Dilengkapi dengan **AI Generator** yang dapat membantu merangkai kalimat deskripsi pekerjaan yang profesional berdasarkan posisi dan nama perusahaan. Memudahkan pengguna untuk menonjolkan pencapaian mereka dengan bahasa yang standar industri.
 ![Pengalaman](Screenshots/pengalaman.png)
 
 ### 6. Edit Keahlian (Skills)
-Manajemen skill dengan level kemahiran.
+Halaman manajemen keahlian untuk menampilkan kompetensi teknis maupun soft skills. Pengguna dapat menentukan tingkat kemahiran (Level) untuk setiap skill, mulai dari Pemula hingga Ahli. Tampilan visual yang jelas membantu perekrut memahami kualifikasi kandidat dengan cepat.
 ![Keahlian](Screenshots/keah.png)
 
 ### 7. Preview CV
-Tampilan akhir CV yang siap di-download.
+Tampilan akhir CV yang mensimulasikan hasil cetak dalam format A4. Di sini pengguna bisa melihat penerapan template (Modern, Creative, dll) secara real-time. Jika sudah sesuai, pengguna dapat langsung mengunduh file CV dalam format PDF berkualitas tinggi siap kirim.
 ![Preview](Screenshots/preview.png)
 
 ### 8. Job Tracker
-Fitur Kanban board untuk memantau status lamaran kerja.
+Fitur tambahan berbentuk papan Kanban untuk memanajemen proses pelamaran kerja. Pengguna dapat memindahkan kartu lamaran antar status: *Wishlist*, *Applied*, *Interview*, hingga *Offer*. Sangat berguna untuk memantau progres karir agar terorganisir dengan rapi.
 ![Job Tracker](Screenshots/jobTracker.png)
 
 ---
