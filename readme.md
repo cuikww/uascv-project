@@ -133,7 +133,7 @@ Fitur unggulan di mana pengguna dapat mendeskripsikan pengalaman kerja mereka. D
 
 ### 6. Edit Keahlian (Skills)
 Halaman manajemen keahlian untuk menampilkan kompetensi teknis maupun soft skills. Pengguna dapat menentukan tingkat kemahiran (Level) untuk setiap skill, mulai dari Pemula hingga Ahli. Tampilan visual yang jelas membantu perekrut memahami kualifikasi kandidat dengan cepat.
-![Keahlian](Screenshots/keah.png)
+![Keahlian](Screenshots/keahlian.png)
 
 ### 7. Preview CV
 Tampilan akhir CV yang mensimulasikan hasil cetak dalam format A4. Di sini pengguna bisa melihat penerapan template (Modern, Creative, dll) secara real-time. Jika sudah sesuai, pengguna dapat langsung mengunduh file CV dalam format PDF berkualitas tinggi siap kirim.
