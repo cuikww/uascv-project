@@ -1,0 +1,1360 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UASCV API Test Report (Detailed)</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --accent-green: #00c853;
+            --accent-red: #d32f2f;
+            --accent-blue: #2196f3;
+            --border-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            font-size: 14px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        .stat-badge {
+            background: var(--bg-secondary);
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .stat-value { font-size: 1.4em; font-weight: bold; }
+        .stat-label { font-size: 0.9em; color: var(--text-secondary); text-transform: uppercase; }
+        
+        .request-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .request-header {
+            padding: 15px;
+            background-color: #252525;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.1em;
+        }
+        
+        .method {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 15px;
+            min-width: 70px;
+            text-align: center;
+            color: #000;
+        }
+        .GET { background-color: #61affe; }
+        .POST { background-color: #49cc90; }
+        .PUT { background-color: #fca130; }
+        .DELETE { background-color: #f93e3e; color: #fff; }
+        .PATCH { background-color: #50e3c2; }
+        
+        .req-info { flex-grow: 1; display: flex; flex-direction: column; }
+        .req-name { font-weight: bold; }
+        .req-url { font-family: monospace; color: var(--text-secondary); font-size: 0.9em; margin-top: 4px; }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        .success { background-color: rgba(0, 200, 83, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .fail { background-color: rgba(211, 47, 47, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+        }
+        
+        .box-title {
+            margin: 0 0 10px 0;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+        
+        .code-box {
+            background-color: #111;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            color: #d4d4d4;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        .assertions {
+            padding: 15px;
+            background-color: #232323;
+            border-top: 1px solid var(--border-color);
+        }
+        .assertion-item { padding: 4px 0; border-bottom: 1px solid #333; }
+        .assertion-item:last-child { border-bottom: none; }
+        .pass-icon { color: var(--accent-green); margin-right: 8px; }
+        .fail-icon { color: var(--accent-red); margin-right: 8px; }
+        
+        footer { text-align: center; margin-top: 40px; color: var(--text-secondary); font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>API Test Report</h1>
+                <div style="color: var(--text-secondary)">26/12/2025, 11.47.04</div>
+            </div>
+            <div class="stats">
+                 <div class="stat-badge">
+                    <div class="stat-value" style="color: var(--text-primary)">34</div>
+                    <div class="stat-label">Total</div>
+                 </div>
+                 <div class="stat-badge">
+                    <div class="stat-value" style="color: var(--accent-green)">34</div>
+                    <div class="stat-label">Passed</div>
+                 </div>
+                 <div class="stat-badge">
+                    <div class="stat-value" style="color: var(--accent-red)">0</div>
+                    <div class="stat-label">Failed</div>
+                 </div>
+            </div>
+        </div>
+
+        <div id="report-content">
+            
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Register</div>
+                <div class="req-url">http://localhost/api/auth/register</div>
+            </div>
+            <div class="status-badge success">201 Created (1173ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "email": "test@example.com",
+  "password": "password123",
+  "fullname": "Test User"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Register success"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 201 or 400/409 handled</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Login</div>
+                <div class="req-url">http://localhost/api/auth/login</div>
+            </div>
+            <div class="status-badge success">200 OK (172ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "email": "test@example.com",
+  "password": "password123"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Login success",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg2YzIyNGY5LThmNDctNGFhYS1iMTcxLTkwMjBhOTAwNTM5NCIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsImlhdCI6MTc2NjcyMDgxMiwiZXhwIjoxNzY3MzI1NjEyfQ._gdI5NHyPNLBHGjYkM4WIXXsC_fydIzI1YV5VJxB8XA",
+  "user": {
+    "id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "email": "test@example.com",
+    "fullname": "Test User"
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Login success or proper error</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">Get My CVs</div>
+                <div class="req-url">http://localhost/api/cvs</div>
+            </div>
+            <div class="status-badge success">200 OK (97ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "data": []
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Create CV</div>
+                <div class="req-url">http://localhost/api/cvs</div>
+            </div>
+            <div class="status-badge success">201 Created (448ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "career_level": "fresh_graduate"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "CV Created",
+  "data": {
+    "id": "b783138d-5208-478b-a297-557a572ed433",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "title": "Untitled CV",
+    "template": "modern",
+    "status": "draft",
+    "created_at": "2025-12-26T03:46:53.643529",
+    "updated_at": "2025-12-26T03:46:53.643529",
+    "target_job_title": null,
+    "target_company_name": null,
+    "target_job_description": null
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 201</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method PUT">PUT</div>
+            <div class="req-info">
+                <div class="req-name">Update CV</div>
+                <div class="req-url">http://localhost/api/cvs/b783138d-5208-478b-a297-557a572ed433</div>
+            </div>
+            <div class="status-badge success">200 OK (111ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "title": "Updated Title",
+  "status": "draft"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "CV berhasil diperbarui",
+  "data": {
+    "id": "b783138d-5208-478b-a297-557a572ed433",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "title": "Updated Title",
+    "template": "modern",
+    "status": "draft",
+    "created_at": "2025-12-26T03:46:53.643529",
+    "updated_at": "2025-12-26T03:46:53.707",
+    "target_job_title": null,
+    "target_company_name": null,
+    "target_job_description": null
+  }
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">Get CV Full Content</div>
+                <div class="req-url">http://localhost/api/cvs/b783138d-5208-478b-a297-557a572ed433/full</div>
+            </div>
+            <div class="status-badge success">200 OK (676ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "cv_info": {
+    "id": "b783138d-5208-478b-a297-557a572ed433",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "title": "Updated Title",
+    "template": "modern",
+    "status": "draft",
+    "created_at": "2025-12-26T03:46:53.643529",
+    "updated_at": "2025-12-26T03:46:53.707",
+    "target_job_title": null,
+    "target_company_name": null,
+    "target_job_description": null
+  },
+  "sections": {
+    "educations": [],
+    "experiences": [],
+    "skills": []
+  }
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Toggle Item In CV</div>
+                <div class="req-url">http://localhost/api/cvs/b783138d-5208-478b-a297-557a572ed433/toggle</div>
+            </div>
+            <div class="status-badge success">200 OK (250ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "section": "educations",
+  "itemId": ""
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item added to CV",
+  "status": "added"
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">List Educations</div>
+                <div class="req-url">http://localhost/api/master/educations</div>
+            </div>
+            <div class="status-badge success">200 OK (81ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "data": []
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Add Education</div>
+                <div class="req-url">http://localhost/api/master/educations</div>
+            </div>
+            <div class="status-badge success">201 Created (123ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "institution": "University X",
+  "start_date": "2020-01-01",
+  "end_date": "2024-01-01",
+  "current": false
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Saved",
+  "data": {
+    "id": "9350a7bb-ea0e-4c0d-8752-4721b9aeaf54",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "institution": "University X",
+    "degree": null,
+    "field_of_study": null,
+    "start_date": "2020-01-01",
+    "end_date": "2024-01-01",
+    "current": false,
+    "description": null,
+    "created_at": "2025-12-26T03:46:55.879396"
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 201</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method PUT">PUT</div>
+            <div class="req-info">
+                <div class="req-name">Update Education</div>
+                <div class="req-url">http://localhost/api/master/educations/9350a7bb-ea0e-4c0d-8752-4721b9aeaf54</div>
+            </div>
+            <div class="status-badge success">200 OK (113ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "institution": "University X (Updated)"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Updated",
+  "data": {
+    "id": "9350a7bb-ea0e-4c0d-8752-4721b9aeaf54",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "institution": "University X (Updated)",
+    "degree": null,
+    "field_of_study": null,
+    "start_date": "2020-01-01",
+    "end_date": "2024-01-01",
+    "current": false,
+    "description": null,
+    "created_at": "2025-12-26T03:46:55.879396"
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method DELETE">DELETE</div>
+            <div class="req-info">
+                <div class="req-name">Delete Education</div>
+                <div class="req-url">http://localhost/api/master/educations/9350a7bb-ea0e-4c0d-8752-4721b9aeaf54</div>
+            </div>
+            <div class="status-badge success">200 OK (81ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Deleted"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">List Experiences</div>
+                <div class="req-url">http://localhost/api/master/experiences</div>
+            </div>
+            <div class="status-badge success">200 OK (93ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "data": []
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Add Experience</div>
+                <div class="req-url">http://localhost/api/master/experiences</div>
+            </div>
+            <div class="status-badge success">201 Created (102ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "company": "Company X",
+  "position": "Developer",
+  "start_date": "2021-01-01",
+  "end_date": "2023-01-01"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Saved",
+  "data": {
+    "id": "970d1167-77bc-46f6-bc9b-af6fdfb127f2",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "company": "Company X",
+    "position": "Developer",
+    "location": null,
+    "start_date": "2021-01-01",
+    "end_date": "2023-01-01",
+    "current": false,
+    "description": null,
+    "created_at": "2025-12-26T03:46:57.077941"
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 201</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method PUT">PUT</div>
+            <div class="req-info">
+                <div class="req-name">Update Experience</div>
+                <div class="req-url">http://localhost/api/master/experiences/970d1167-77bc-46f6-bc9b-af6fdfb127f2</div>
+            </div>
+            <div class="status-badge success">200 OK (102ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "position": "Senior Developer"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Updated",
+  "data": {
+    "id": "970d1167-77bc-46f6-bc9b-af6fdfb127f2",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "company": "Company X",
+    "position": "Senior Developer",
+    "location": null,
+    "start_date": "2021-01-01",
+    "end_date": "2023-01-01",
+    "current": false,
+    "description": null,
+    "created_at": "2025-12-26T03:46:57.077941"
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method DELETE">DELETE</div>
+            <div class="req-info">
+                <div class="req-name">Delete Experience</div>
+                <div class="req-url">http://localhost/api/master/experiences/970d1167-77bc-46f6-bc9b-af6fdfb127f2</div>
+            </div>
+            <div class="status-badge success">200 OK (99ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Deleted"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">List Skills</div>
+                <div class="req-url">http://localhost/api/master/skills</div>
+            </div>
+            <div class="status-badge success">200 OK (97ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "data": []
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Add Skill</div>
+                <div class="req-url">http://localhost/api/master/skills</div>
+            </div>
+            <div class="status-badge success">201 Created (109ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "skill_name": "JavaScript",
+  "level": "Intermediate"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Saved",
+  "data": {
+    "id": "f3c30f15-c6eb-4b4d-81e2-7f7c3874941d",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "skill_name": "JavaScript",
+    "level": "Intermediate",
+    "created_at": "2025-12-26T03:46:58.258985"
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 201</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method PUT">PUT</div>
+            <div class="req-info">
+                <div class="req-name">Update Skill</div>
+                <div class="req-url">http://localhost/api/master/skills/f3c30f15-c6eb-4b4d-81e2-7f7c3874941d</div>
+            </div>
+            <div class="status-badge success">200 OK (119ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "level": "Advanced"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Updated",
+  "data": {
+    "id": "f3c30f15-c6eb-4b4d-81e2-7f7c3874941d",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "skill_name": "JavaScript",
+    "level": "Advanced",
+    "created_at": "2025-12-26T03:46:58.258985"
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method DELETE">DELETE</div>
+            <div class="req-info">
+                <div class="req-name">Delete Skill</div>
+                <div class="req-url">http://localhost/api/master/skills/f3c30f15-c6eb-4b4d-81e2-7f7c3874941d</div>
+            </div>
+            <div class="status-badge success">200 OK (87ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Item Deleted"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">Get My Profile</div>
+                <div class="req-url">http://localhost/api/profiles</div>
+            </div>
+            <div class="status-badge success">200 OK (98ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "data": {}
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method PUT">PUT</div>
+            <div class="req-info">
+                <div class="req-name">Save Profile</div>
+                <div class="req-url">http://localhost/api/profiles</div>
+            </div>
+            <div class="status-badge success">200 OK (113ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "fullname": "Test User",
+  "email": "test@example.com",
+  "phone_number": "+62123456789",
+  "city": "City",
+  "country": "Indonesia",
+  "profile_summary": "Short bio here.",
+  "linkedin_url": "https://linkedin.com/in/test",
+  "github_url": "https://github.com/test"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Profil berhasil disimpan",
+  "data": {
+    "id": "c9a2e545-f2c1-4e5f-9fb1-833bc789583d",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "fullname": "Test User",
+    "email": "test@example.com",
+    "address": null,
+    "profile_summary": "Short bio here.",
+    "linkedin_url": "https://linkedin.com/in/test",
+    "github_url": "https://github.com/test",
+    "website_url": null,
+    "created_at": "2025-12-26T03:46:59.425227",
+    "updated_at": "2025-12-26T03:46:59.425227",
+    "city": "City",
+    "province": null,
+    "country": "Indonesia",
+    "postal_code": null,
+    "phone_number": "+62123456789"
+  }
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Generate Experience Description</div>
+                <div class="req-url">http://localhost/api/ai/experience</div>
+            </div>
+            <div class="status-badge fail">500 Internal Server Error (619ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "position": "Software Engineer",
+  "company": "Company ABC",
+  "keywords": "Node.js, Express, SQL"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Gagal generate deskripsi",
+  "error": "{\"error\":{\"code\":429,\"message\":\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 23.437426ms.\",\"status\":\"RESOURCE_EXHAUSTED\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.Help\",\"links\":[{\"description\":\"Learn more about Gemini API quotas\",\"url\":\"https://ai.google.dev/gemini-api/docs/rate-limits\"}]},{\"@type\":\"type.googleapis.com/google.rpc.QuotaFailure\",\"violations\":[{\"quotaMetric\":\"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\"quotaId\":\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\"quotaDimensions\":{\"location\":\"global\",\"model\":\"gemini-2.5-flash\"},\"quotaValue\":\"20\"}]},{\"@type\":\"type.googleapis.com/google.rpc.RetryInfo\",\"retryDelay\":\"0s\"}]}}"
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Generate Professional Summary</div>
+                <div class="req-url">http://localhost/api/ai/summary</div>
+            </div>
+            <div class="status-badge fail">500 Internal Server Error (333ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "fullname": "Test User",
+  "jobTitle": "Frontend Developer",
+  "keywords": "Vue.js, Tailwind, UI",
+  "experience_level": "Menengah"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Gagal generate summary",
+  "error": "{\"error\":{\"code\":429,\"message\":\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 59.527515641s.\",\"status\":\"RESOURCE_EXHAUSTED\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.Help\",\"links\":[{\"description\":\"Learn more about Gemini API quotas\",\"url\":\"https://ai.google.dev/gemini-api/docs/rate-limits\"}]},{\"@type\":\"type.googleapis.com/google.rpc.QuotaFailure\",\"violations\":[{\"quotaMetric\":\"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\"quotaId\":\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\"quotaDimensions\":{\"location\":\"global\",\"model\":\"gemini-2.5-flash\"},\"quotaValue\":\"20\"}]},{\"@type\":\"type.googleapis.com/google.rpc.RetryInfo\",\"retryDelay\":\"59s\"}]}}"
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Generate Style Config</div>
+                <div class="req-url">http://localhost/api/ai/style</div>
+            </div>
+            <div class="status-badge fail">500 Internal Server Error (371ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "prompt": "Saya ingin tampilan CV yang modern, elegan, berwarna biru tua, cocok untuk melamar ke perusahaan teknologi startup."
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Gagal generate style",
+  "error": "{\"error\":{\"code\":429,\"message\":\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\\nPlease retry in 59.003920232s.\",\"status\":\"RESOURCE_EXHAUSTED\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.Help\",\"links\":[{\"description\":\"Learn more about Gemini API quotas\",\"url\":\"https://ai.google.dev/gemini-api/docs/rate-limits\"}]},{\"@type\":\"type.googleapis.com/google.rpc.QuotaFailure\",\"violations\":[{\"quotaMetric\":\"generativelanguage.googleapis.com/generate_content_free_tier_requests\",\"quotaId\":\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\",\"quotaDimensions\":{\"location\":\"global\",\"model\":\"gemini-2.5-flash\"},\"quotaValue\":\"20\"}]},{\"@type\":\"type.googleapis.com/google.rpc.RetryInfo\",\"retryDelay\":\"59s\"}]}}"
+}</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Create CV Helper</div>
+                <div class="req-url">http://localhost/api/cvs</div>
+            </div>
+            <div class="status-badge success">201 Created (100ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "title": "CV for Job Tracker",
+  "career_level": "mid_level"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "CV Created",
+  "data": {
+    "id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "title": "CV for Job Tracker",
+    "template": "modern",
+    "status": "draft",
+    "created_at": "2025-12-26T03:47:01.502994",
+    "updated_at": "2025-12-26T03:47:01.502994",
+    "target_job_title": null,
+    "target_company_name": null,
+    "target_job_description": null
+  }
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 201</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method POST">POST</div>
+            <div class="req-info">
+                <div class="req-name">Create Job Application</div>
+                <div class="req-url">http://localhost/api/job-tracker</div>
+            </div>
+            <div class="status-badge success">201 Created (113ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "company_name": "Google",
+  "position_title": "Software Engineer",
+  "status": "wishlist",
+  "cv_id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+  "job_description": "Descriptive text",
+  "company_location": "Jakarta",
+  "difficulty_level": "medium"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "id": "69eaed4d-8dd4-43b9-970b-c295a7df79c5",
+  "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+  "cv_id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+  "company_name": "Google",
+  "position_title": "Software Engineer",
+  "status": "wishlist",
+  "applied_date": null,
+  "interview_date": null,
+  "interview_location": null,
+  "interview_type": null,
+  "company_location": "Jakarta",
+  "work_mode": null,
+  "job_description": "Descriptive text",
+  "job_url": null,
+  "salary_range": null,
+  "job_type": null,
+  "notes": null,
+  "difficulty_level": "medium",
+  "created_at": "2025-12-26T03:47:01.799221",
+  "updated_at": "2025-12-26T03:47:01.799221"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 201</div><div class="assertion-item"><span class="pass-icon">✔</span> Response has created application</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">Get All Job Applications</div>
+                <div class="req-url">http://localhost/api/job-tracker</div>
+            </div>
+            <div class="status-badge success">200 OK (91ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">[
+  {
+    "id": "69eaed4d-8dd4-43b9-970b-c295a7df79c5",
+    "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+    "cv_id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+    "company_name": "Google",
+    "position_title": "Software Engineer",
+    "status": "wishlist",
+    "applied_date": null,
+    "interview_date": null,
+    "interview_location": null,
+    "interview_type": null,
+    "company_location": "Jakarta",
+    "work_mode": null,
+    "job_description": "Descriptive text",
+    "job_url": null,
+    "salary_range": null,
+    "job_type": null,
+    "notes": null,
+    "difficulty_level": "medium",
+    "created_at": "2025-12-26T03:47:01.799221",
+    "updated_at": "2025-12-26T03:47:01.799221"
+  }
+]</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div><div class="assertion-item"><span class="pass-icon">✔</span> Response is an array</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">Get Single Job Application</div>
+                <div class="req-url">http://localhost/api/job-tracker/69eaed4d-8dd4-43b9-970b-c295a7df79c5</div>
+            </div>
+            <div class="status-badge success">200 OK (93ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "id": "69eaed4d-8dd4-43b9-970b-c295a7df79c5",
+  "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+  "cv_id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+  "company_name": "Google",
+  "position_title": "Software Engineer",
+  "status": "wishlist",
+  "applied_date": null,
+  "interview_date": null,
+  "interview_location": null,
+  "interview_type": null,
+  "company_location": "Jakarta",
+  "work_mode": null,
+  "job_description": "Descriptive text",
+  "job_url": null,
+  "salary_range": null,
+  "job_type": null,
+  "notes": null,
+  "difficulty_level": "medium",
+  "created_at": "2025-12-26T03:47:01.799221",
+  "updated_at": "2025-12-26T03:47:01.799221"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div><div class="assertion-item"><span class="pass-icon">✔</span> Response has required fields</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method PUT">PUT</div>
+            <div class="req-info">
+                <div class="req-name">Update Job Application</div>
+                <div class="req-url">http://localhost/api/job-tracker/69eaed4d-8dd4-43b9-970b-c295a7df79c5</div>
+            </div>
+            <div class="status-badge success">200 OK (388ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "company_name": "Google Updated",
+  "status": "applied"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "id": "69eaed4d-8dd4-43b9-970b-c295a7df79c5",
+  "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+  "cv_id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+  "company_name": "Google Updated",
+  "position_title": "Software Engineer",
+  "status": "applied",
+  "applied_date": null,
+  "interview_date": null,
+  "interview_location": null,
+  "interview_type": null,
+  "company_location": "Jakarta",
+  "work_mode": null,
+  "job_description": "Descriptive text",
+  "job_url": null,
+  "salary_range": null,
+  "job_type": null,
+  "notes": null,
+  "difficulty_level": "medium",
+  "created_at": "2025-12-26T03:47:01.799221",
+  "updated_at": "2025-12-26T03:47:02.49"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div><div class="assertion-item"><span class="pass-icon">✔</span> Application updated</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method PATCH">PATCH</div>
+            <div class="req-info">
+                <div class="req-name">Update Job Application Status</div>
+                <div class="req-url">http://localhost/api/job-tracker/69eaed4d-8dd4-43b9-970b-c295a7df79c5/status</div>
+            </div>
+            <div class="status-badge success">200 OK (304ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">{
+  "status": "interview"
+}</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "id": "69eaed4d-8dd4-43b9-970b-c295a7df79c5",
+  "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+  "cv_id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+  "company_name": "Google Updated",
+  "position_title": "Software Engineer",
+  "status": "interview",
+  "applied_date": null,
+  "interview_date": null,
+  "interview_location": null,
+  "interview_type": null,
+  "company_location": "Jakarta",
+  "work_mode": null,
+  "job_description": "Descriptive text",
+  "job_url": null,
+  "salary_range": null,
+  "job_type": null,
+  "notes": null,
+  "difficulty_level": "medium",
+  "created_at": "2025-12-26T03:47:01.799221",
+  "updated_at": "2025-12-26T03:47:03.084"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div><div class="assertion-item"><span class="pass-icon">✔</span> Status updated</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">Get Job Applications by Status</div>
+                <div class="req-url">http://localhost/api/job-tracker/by-status</div>
+            </div>
+            <div class="status-badge success">200 OK (356ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "wishlist": [],
+  "applied": [],
+  "interview": [
+    {
+      "id": "69eaed4d-8dd4-43b9-970b-c295a7df79c5",
+      "user_id": "86c224f9-8f47-4aaa-b171-9020a9005394",
+      "cv_id": "e7e8310a-ecad-48e8-b7dd-dfad476115f8",
+      "company_name": "Google Updated",
+      "position_title": "Software Engineer",
+      "status": "interview",
+      "applied_date": null,
+      "interview_date": null,
+      "interview_location": null,
+      "interview_type": null,
+      "company_location": "Jakarta",
+      "work_mode": null,
+      "job_description": "Descriptive text",
+      "job_url": null,
+      "salary_range": null,
+      "job_type": null,
+      "notes": null,
+      "difficulty_level": "medium",
+      "created_at": "2025-12-26T03:47:01.799221",
+      "updated_at": "2025-12-26T03:47:03.084"
+    }
+  ],
+  "offer": []
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div><div class="assertion-item"><span class="pass-icon">✔</span> Response has status groups</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method GET">GET</div>
+            <div class="req-info">
+                <div class="req-name">Get Job Application Stats</div>
+                <div class="req-url">http://localhost/api/job-tracker/stats</div>
+            </div>
+            <div class="status-badge success">200 OK (104ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "wishlist": 0,
+  "applied": 0,
+  "interview": 1,
+  "offer": 0,
+  "total": 1
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div><div class="assertion-item"><span class="pass-icon">✔</span> Response has stats</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method DELETE">DELETE</div>
+            <div class="req-info">
+                <div class="req-name">Delete Job Application</div>
+                <div class="req-url">http://localhost/api/job-tracker/69eaed4d-8dd4-43b9-970b-c295a7df79c5</div>
+            </div>
+            <div class="status-badge success">200 OK (175ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "Job application deleted successfully"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status code is 200</div><div class="assertion-item"><span class="pass-icon">✔</span> Deletion confirmed</div></div>
+    </div>
+    
+    <div class="request-card">
+        <div class="request-header">
+            <div class="method DELETE">DELETE</div>
+            <div class="req-info">
+                <div class="req-name">Delete CV</div>
+                <div class="req-url">http://localhost/api/cvs/e7e8310a-ecad-48e8-b7dd-dfad476115f8</div>
+            </div>
+            <div class="status-badge success">200 OK (109ms)</div>
+        </div>
+        
+        <div class="details-grid">
+            <div>
+                <h4 class="box-title">Request Body</h4>
+                <div class="code-box">No Body</div>
+            </div>
+            <div>
+                <h4 class="box-title">Response Body</h4>
+                <div class="code-box">{
+  "message": "CV berhasil dihapus"
+}</div>
+            </div>
+        </div>
+        <div class="assertions"><h4 class="box-title">Assertions</h4><div class="assertion-item"><span class="pass-icon">✔</span> Status is 200</div></div>
+    </div>
+    
+        </div>
+        
+        <footer>Generated by Custom Report Generator for UASCV Project</footer>
+    </div>
+</body>
+</html>

@@ -1,18 +1,19 @@
 import supabase from '../config/supabase.js';
+import { isValidUUID } from '../utils/helpers.js';
 
 // Get all job applications for user
 export const getAllJobApplications = async (req, res) => {
     const userId = req.user.id;
-    
+
     try {
         const { data, error } = await supabase
             .from('job_applications')
             .select('*')
             .eq('user_id', userId)
             .order('created_at', { ascending: false });
-        
+
         if (error) throw error;
-        
+
         res.json(data);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -22,11 +23,11 @@ export const getAllJobApplications = async (req, res) => {
 // Get job applications grouped by status
 export const getJobApplicationsByStatus = async (req, res) => {
     const userId = req.user.id;
-    
+
     try {
         const statuses = ['wishlist', 'applied', 'interview', 'offer'];
         const result = {};
-        
+
         for (const status of statuses) {
             const { data, error } = await supabase
                 .from('job_applications')
@@ -34,11 +35,11 @@ export const getJobApplicationsByStatus = async (req, res) => {
                 .eq('user_id', userId)
                 .eq('status', status)
                 .order('created_at', { ascending: false });
-            
+
             if (error) throw error;
             result[status] = data || [];
         }
-        
+
         res.json(result);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -49,7 +50,11 @@ export const getJobApplicationsByStatus = async (req, res) => {
 export const getJobApplication = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
-    
+
+    if (!isValidUUID(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+    }
+
     try {
         const { data, error } = await supabase
             .from('job_applications')
@@ -57,9 +62,9 @@ export const getJobApplication = async (req, res) => {
             .eq('id', id)
             .eq('user_id', userId)
             .single();
-        
+
         if (error || !data) return res.status(404).json({ message: "Job application not found" });
-        
+
         res.json(data);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -74,7 +79,7 @@ export const createJobApplication = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized - User not found" });
         }
 
-        const {
+        let {
             company_name,
             position_title,
             status = 'wishlist',
@@ -92,10 +97,19 @@ export const createJobApplication = async (req, res) => {
             notes,
             difficulty_level
         } = req.body;
-        
+
         // Validasi required fields
         if (!company_name || !position_title) {
             return res.status(400).json({ message: "Company name and position title are required" });
+        }
+
+        // Sanitasi cv_id
+        if (cv_id === "" || cv_id === "null") {
+            cv_id = null;
+        }
+
+        if (cv_id && !isValidUUID(cv_id)) {
+            return res.status(400).json({ message: "Invalid CV ID format" });
         }
 
         const { data, error } = await supabase
@@ -120,12 +134,15 @@ export const createJobApplication = async (req, res) => {
                 difficulty_level: difficulty_level || 'medium'
             }])
             .select();
-        
+
         if (error) throw error;
-        
+
         res.status(201).json(data[0]);
     } catch (err) {
         console.error('Create job error:', err);
+        if (err.code === '23503') {
+            return res.status(400).json({ message: "Invalid CV ID or User ID - constraint violation" });
+        }
         res.status(500).json({ message: err.message || 'Failed to create application' });
     }
 };
@@ -135,7 +152,11 @@ export const updateJobApplication = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
     let updates = req.body;
-    
+
+    if (!isValidUUID(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+    }
+
     try {
         // Verify ownership
         const { data: existing } = await supabase
@@ -144,26 +165,26 @@ export const updateJobApplication = async (req, res) => {
             .eq('id', id)
             .eq('user_id', userId)
             .single();
-        
+
         if (!existing) return res.status(403).json({ message: "Access denied" });
-        
+
         // Convert empty strings to null for date/optional fields
         updates = Object.keys(updates).reduce((acc, key) => {
             acc[key] = (updates[key] === '' || updates[key] === undefined) ? null : updates[key];
             return acc;
         }, {});
-        
+
         // Add updated_at
         updates.updated_at = new Date();
-        
+
         const { data, error } = await supabase
             .from('job_applications')
             .update(updates)
             .eq('id', id)
             .select();
-        
+
         if (error) throw error;
-        
+
         res.json(data[0]);
     } catch (err) {
         console.error('Update job error:', err);
@@ -176,13 +197,17 @@ export const updateJobApplicationStatus = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
     const { status } = req.body;
-    
+
+    if (!isValidUUID(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+    }
+
     // Validate status
     const validStatuses = ['wishlist', 'applied', 'interview', 'offer'];
     if (!validStatuses.includes(status)) {
         return res.status(400).json({ message: "Invalid status" });
     }
-    
+
     try {
         // Verify ownership
         const { data: existing } = await supabase
@@ -191,22 +216,22 @@ export const updateJobApplicationStatus = async (req, res) => {
             .eq('id', id)
             .eq('user_id', userId)
             .single();
-        
+
         if (!existing) return res.status(403).json({ message: "Access denied" });
-        
+
         // Update status
         const { data, error } = await supabase
             .from('job_applications')
-            .update({ 
+            .update({
                 status,
                 updated_at: new Date(),
                 applied_date: status === 'applied' ? new Date().toISOString().split('T')[0] : undefined
             })
             .eq('id', id)
             .select();
-        
+
         if (error) throw error;
-        
+
         // Log history
         try {
             await supabase
@@ -219,7 +244,7 @@ export const updateJobApplicationStatus = async (req, res) => {
         } catch (historyErr) {
             console.log('History logging failed:', historyErr);
         }
-        
+
         res.json(data[0]);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -230,7 +255,11 @@ export const updateJobApplicationStatus = async (req, res) => {
 export const deleteJobApplication = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
-    
+
+    if (!isValidUUID(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+    }
+
     try {
         // Verify ownership
         const { data: existing } = await supabase
@@ -239,17 +268,17 @@ export const deleteJobApplication = async (req, res) => {
             .eq('id', id)
             .eq('user_id', userId)
             .single();
-        
+
         if (!existing) return res.status(403).json({ message: "Access denied" });
-        
+
         // Delete (cascade will handle history)
         const { error } = await supabase
             .from('job_applications')
             .delete()
             .eq('id', id);
-        
+
         if (error) throw error;
-        
+
         res.json({ message: "Job application deleted successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -259,14 +288,14 @@ export const deleteJobApplication = async (req, res) => {
 // Get statistics for dashboard
 export const getJobApplicationStats = async (req, res) => {
     const userId = req.user.id;
-    
+
     try {
         // Get counts by status
         const { data: stats } = await supabase
             .from('job_applications')
             .select('status')
             .eq('user_id', userId);
-        
+
         const counts = {
             wishlist: 0,
             applied: 0,
@@ -274,12 +303,12 @@ export const getJobApplicationStats = async (req, res) => {
             offer: 0,
             total: 0
         };
-        
+
         stats?.forEach(app => {
             counts[app.status]++;
             counts.total++;
         });
-        
+
         res.json(counts);
     } catch (err) {
         res.status(500).json({ message: err.message });

@@ -1,6 +1,6 @@
 import supabase from '../config/supabase.js';
 import { validationResult } from 'express-validator';
-import { TABLE_MAP, sanitizePayload } from '../utils/helpers.js';
+import { TABLE_MAP, sanitizePayload, isValidUUID } from '../utils/helpers.js';
 
 // --- GENERIC CRUD HANDLER (Agar tidak Redundan) ---
 
@@ -33,7 +33,7 @@ export const addMasterData = async (req, res) => {
     const { section } = req.params;
     const userId = req.user.id;
     const table = TABLE_MAP[section];
-    
+
     // 2. Sanitasi Data (Handling Date Format)
     const payload = sanitizePayload(req.body);
 
@@ -61,6 +61,10 @@ export const updateMasterData = async (req, res) => {
     const table = TABLE_MAP[section];
     const payload = sanitizePayload(req.body);
 
+    if (!isValidUUID(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+    }
+
     try {
         const { data, error } = await supabase
             .from(table)
@@ -83,6 +87,10 @@ export const deleteMasterData = async (req, res) => {
     const { section, id } = req.params;
     const userId = req.user.id;
     const table = TABLE_MAP[section];
+
+    if (!isValidUUID(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+    }
 
     try {
         const { error, count } = await supabase

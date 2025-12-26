@@ -178,28 +178,6 @@
           ]
         },
         {
-          "name": "Get CV By Id",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/cvs/{{cvId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cvs",
-                "{{cvId}}"
-              ]
-            }
-          }
-        },
-        {
           "name": "Update CV",
           "request": {
             "method": "PUT",
@@ -217,28 +195,6 @@
               "mode": "raw",
               "raw": "{\n  \"title\": \"Updated Title\",\n  \"status\": \"draft\"\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/cvs/{{cvId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "cvs",
-                "{{cvId}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Delete CV",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
             "url": {
               "raw": "{{baseUrl}}/cvs/{{cvId}}",
               "host": [
@@ -322,6 +278,18 @@
       "item": [
         {
           "name": "List Educations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -344,6 +312,23 @@
         },
         {
           "name": "Add Education",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set('eduId', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -374,6 +359,18 @@
         },
         {
           "name": "Update Education",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -391,20 +388,32 @@
               "raw": "{\n  \"institution\": \"University X (Updated)\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/master/educations/{{itemId}}",
+              "raw": "{{baseUrl}}/master/educations/{{eduId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "master",
                 "educations",
-                "{{itemId}}"
+                "{{eduId}}"
               ]
             }
           }
         },
         {
           "name": "Delete Education",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
@@ -414,20 +423,32 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/master/educations/{{itemId}}",
+              "raw": "{{baseUrl}}/master/educations/{{eduId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "master",
                 "educations",
-                "{{itemId}}"
+                "{{eduId}}"
               ]
             }
           }
         },
         {
           "name": "List Experiences",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -450,6 +471,23 @@
         },
         {
           "name": "Add Experience",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set('expId', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -480,6 +518,18 @@
         },
         {
           "name": "Update Experience",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -497,20 +547,32 @@
               "raw": "{\n  \"position\": \"Senior Developer\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/master/experiences/{{itemId}}",
+              "raw": "{{baseUrl}}/master/experiences/{{expId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "master",
                 "experiences",
-                "{{itemId}}"
+                "{{expId}}"
               ]
             }
           }
         },
         {
           "name": "Delete Experience",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
@@ -520,20 +582,32 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/master/experiences/{{itemId}}",
+              "raw": "{{baseUrl}}/master/experiences/{{expId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "master",
                 "experiences",
-                "{{itemId}}"
+                "{{expId}}"
               ]
             }
           }
         },
         {
           "name": "List Skills",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [
@@ -556,6 +630,23 @@
         },
         {
           "name": "Add Skill",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.environment.set('skillId', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -586,6 +677,18 @@
         },
         {
           "name": "Update Skill",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -603,20 +706,32 @@
               "raw": "{\n  \"level\": \"Advanced\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/master/skills/{{itemId}}",
+              "raw": "{{baseUrl}}/master/skills/{{skillId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "master",
                 "skills",
-                "{{itemId}}"
+                "{{skillId}}"
               ]
             }
           }
         },
         {
           "name": "Delete Skill",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "header": [
@@ -626,14 +741,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/master/skills/{{itemId}}",
+              "raw": "{{baseUrl}}/master/skills/{{skillId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "master",
                 "skills",
-                "{{itemId}}"
+                "{{skillId}}"
               ]
             }
           }
@@ -797,6 +912,116 @@
       "name": "Job Tracker",
       "item": [
         {
+          "name": "Create CV Helper",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"CV for Job Tracker\",\n  \"career_level\": \"mid_level\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cvs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201', function () { pm.expect(pm.response.code).to.equal(201); });",
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.environment.set('cvId', json.data.id);",
+                  "    console.log('Set new cvId for Job Tracker:', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Job Application",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var cvId = pm.environment.get('cvId');",
+                  "if (cvId && cvId.length > 5) {",
+                  "    pm.environment.set('cvIdFormatted', '\"' + cvId + '\"');",
+                  "} else {",
+                  "    pm.environment.set('cvIdFormatted', 'null');",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has created application', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.company_name).to.equal('Google');",
+                  "    pm.expect(jsonData.position_title).to.equal('Software Engineer');",
+                  "    pm.environment.set('appId', jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Google\",\n  \"position_title\": \"Software Engineer\",\n  \"status\": \"wishlist\",\n  \"cv_id\": {{cvIdFormatted}},\n  \"job_description\": \"Descriptive text\",\n  \"company_location\": \"Jakarta\",\n  \"difficulty_level\": \"medium\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker"
+              ]
+            },
+            "description": "Create a new job application."
+          },
+          "response": []
+        },
+        {
           "name": "Get All Job Applications",
           "event": [
             {
@@ -838,103 +1063,6 @@
               ]
             },
             "description": "Retrieve all job applications for the authenticated user"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Job Applications by Status",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Response has status groups', function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('wishlist');",
-                  "    pm.expect(jsonData).to.have.property('applied');",
-                  "    pm.expect(jsonData).to.have.property('interview');",
-                  "    pm.expect(jsonData).to.have.property('offer');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/job-tracker/by-status",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "job-tracker",
-                "by-status"
-              ]
-            },
-            "description": "Get all job applications grouped by status (wishlist, applied, interview, offer, rejected, accepted)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Job Application Stats",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('Response has stats', function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('total');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/job-tracker/stats",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "job-tracker",
-                "stats"
-              ]
-            },
-            "description": "Get statistics of job applications by status"
           },
           "response": []
         },
@@ -988,59 +1116,6 @@
           "response": []
         },
         {
-          "name": "Create Job Application",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 201', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "pm.test('Response has created application', function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('id');",
-                  "    pm.expect(jsonData.company_name).to.equal('Google');",
-                  "    pm.expect(jsonData.position_title).to.equal('Software Engineer');",
-                  "    pm.environment.set('appId', jsonData.id);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"company_name\": \"Google\",\n  \"position_title\": \"Software Engineer\",\n  \"status\": \"wishlist\",\n  \"cv_id\": \"{{cvId}}\",\n  \"job_description\": \"We are looking for a talented software engineer to join our team. You will work on solving complex problems and building scalable systems.\",\n  \"job_url\": \"https://careers.google.com/jobs/results/\",\n  \"company_location\": \"Jakarta\",\n  \"work_mode\": \"hybrid\",\n  \"job_type\": \"full-time\",\n  \"salary_range\": \"15-20 juta\",\n  \"difficulty_level\": \"high\",\n  \"notes\": \"Saw this on LinkedIn, looks interesting. Requires 3+ years experience.\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/job-tracker",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "job-tracker"
-              ]
-            },
-            "description": "Create a new job application. company_name and position_title are required."
-          },
-          "response": []
-        },
-        {
           "name": "Update Job Application",
           "event": [
             {
@@ -1053,7 +1128,7 @@
                   "",
                   "pm.test('Application updated', function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.company_name).to.equal('Google');",
+                  "    pm.expect(jsonData.company_name).to.equal('Google Updated');",
                   "});"
                 ]
               }
@@ -1075,7 +1150,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"company_name\": \"Google\",\n  \"position_title\": \"Senior Software Engineer\",\n  \"status\": \"applied\",\n  \"cv_id\": \"{{cvId}}\",\n  \"job_description\": \"Updated description\",\n  \"job_url\": \"https://careers.google.com/jobs/results/\",\n  \"company_location\": \"Jakarta\",\n  \"work_mode\": \"hybrid\",\n  \"job_type\": \"full-time\",\n  \"salary_range\": \"20-25 juta\",\n  \"applied_date\": \"2024-12-24\",\n  \"difficulty_level\": \"high\",\n  \"notes\": \"Updated notes after phone screening\"\n}"
+              "raw": "{\n  \"company_name\": \"Google Updated\",\n  \"status\": \"applied\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/job-tracker/{{appId}}",
@@ -1087,7 +1162,7 @@
                 "{{appId}}"
               ]
             },
-            "description": "Update an existing job application with all details"
+            "description": "Update an existing job application"
           },
           "response": []
         },
@@ -1126,7 +1201,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"interview\",\n  \"interview_date\": \"2024-12-25T14:00:00\",\n  \"interview_location\": \"Google Meet\",\n  \"interview_type\": \"video\"\n}"
+              "raw": "{\n  \"status\": \"interview\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/job-tracker/{{appId}}/status",
@@ -1139,7 +1214,101 @@
                 "status"
               ]
             },
-            "description": "Update the status of a job application. Valid statuses: wishlist, applied, interview, offer, rejected, accepted"
+            "description": "Update the status of a job application."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job Applications by Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has status groups', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('interview');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/by-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "by-status"
+              ]
+            },
+            "description": "Get all job applications grouped by status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job Application Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has stats', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('total');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/job-tracker/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "job-tracker",
+                "stats"
+              ]
+            },
+            "description": "Get statistics of job applications by status"
           },
           "response": []
         },
@@ -1193,6 +1362,45 @@
             "description": "Delete a job application by ID"
           },
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "Final Cleanup",
+      "item": [
+        {
+          "name": "Delete CV",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cvs/{{cvId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cvs",
+                "{{cvId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
         }
       ]
     }
