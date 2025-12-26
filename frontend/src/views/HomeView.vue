@@ -49,9 +49,7 @@ onMounted(() => {
             <div class="relative hidden lg:block">
                 <div class="absolute -top-10 -right-10 w-72 h-72 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
                 <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 relative transform rotate-2 hover:rotate-0 transition duration-500">
-                    <div class="h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400">
-                        Preview Template CV
-                    </div>
+<img src="/cv-preview-hero.png" alt="App Preview" class="w-full h-auto rounded-lg shadow-sm" />
                 </div>
             </div>
         </div>
