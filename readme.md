@@ -1,230 +1,146 @@
-# 🚀 AI CV Maker - Developer Guide
+# 🚀 AI CV Maker (UASCV)
 
-Panduan ini dibuat khusus untuk anggota kelompok agar bisa menjalankan project di komputer masing-masing.
+Aplikasi pembuat CV otomatis berbasis AI yang membantu mahasiswa dan profesional membuat CV standar industri dalam hitungan menit.
+
+![Landing Page](Screenshots/root.png)
 
 ---
 
-## 📋 Prasyarat (Wajib Install)
+## 📋 Daftar Isi
+1. [Fitur Utama](#-fitur-utama)
+2. [Prasyarat](#-prasyarat)
+3. [Cara Menjalankan (Quick Start)](#-cara-menjalankan-quick-start)
+4. [Daftar Endpoint API](#-daftar-endpoint-api)
+5. [Database ERD](#-database-erd)
+6. [Galeri Screenshot](#-galeri-screenshot)
 
-Pastikan laptop kalian sudah terinstall:
+---
 
-- **Node.js** (minimal v16, rekomendasi v20+)  
-- **Git**  
-- **npm** atau **yarn** (biasanya sudah terinstall dengan Node.js)
+## ✨ Fitur Utama
+- **AI-Powered**: Generate deskripsi pekerjaan, ringkasan profesional, dan style CV menggunakan Gemini AI.
+- **Real-time Preview**: Lihat perubahan CV secara langsung saat diedit.
+- **Multiple Templates**: Pilihan template Modern, Creative, Minimalist, dan Professional.
+- **Job Tracker**: Pantau status lamaran kerja (Wishlist, Applied, Interview, Offer).
+- **PDF Export**: Download CV berkualitas tinggi siap cetak (A4).
 
-### Verifikasi instalasi:
+---
 
-Buka terminal dan jalankan perintah berikut:
+## 📋 Prasyarat
+Pastikan sudah terinstall:
+- **Node.js** (v16+)
+- **NPM**
+- **Git**
+- **PostgreSQL** (via Supabase)
+
+---
+
+## ⚡ Cara Menjalankan (Quick Start)
+
+### 1. Setup Backend
+Backend berjalan di Port `3000`.
 
 ```bash
-node --version
-npm --version
-git --version
-```
-
----
-
-## ⚡ Quick Start – Cara Menjalankan Project
-
-Ikuti langkah berikut **secara berurutan**.
-
----
-
-### 1️⃣ Clone Repository
-
-Buka terminal (CMD / PowerShell / Git Bash) di folder tujuan, lalu jalankan:
-
-```bash
-git clone https://github.com/cuikww/uascv-project
-cd uascv-project
-```
-
----
-
-### 2️⃣ Setup Backend
-
-Masuk ke folder backend dan install dependencies:
-
-```bash
+# Masuk ke folder backend
 cd backend
+
+# Install dependencies
 npm install
-```
 
-**Buat file `.env`** di folder `backend/` dengan isi:
+# Buat file .env (minta ke ketua tim/lihat contoh)
+# Pastikan konfigurasi SUPABASE dan GEMINI_TOKEN sudah benar
 
-```env
-# Supabase Configuration
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
-
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-```
-
-> ⚠️ **PENTING**: Minta file `.env` yang benar dari ketua kelompok atau cek di dokumentasi tim. Jangan commit file `.env` ke GitHub!
-
-Jalankan backend:
-
-```bash
-# Mode development (dengan auto-reload)
+# Jalankan server
 npm run dev
-
-# Mode production
-npm start
 ```
 
-Backend akan berjalan di `http://localhost:3000`
-
----
-
-### 3️⃣ Setup Frontend
-
-Di terminal yang **berbeda**, masuk ke folder frontend:
+### 2. Setup Frontend
+Frontend berjalan di Port `5173`.
 
 ```bash
+# Buka terminal baru, masuk ke folder frontend
 cd frontend
+
+# Install dependencies
 npm install
-```
 
-Jalankan development server:
-
-```bash
+# Jalankan development server
 npm run dev
 ```
 
-Frontend akan berjalan di `http://localhost:5173` (atau port lain jika 5173 sudah terpakai)
+Aces aplikasi di: `http://localhost:5173`
 
 ---
 
-## 📁 Project Structure
+## 🔌 Daftar Endpoint API
+Base URL: `http://localhost:3000/api`
 
-```
-uascv-project/
-├── backend/                    # REST API (Express.js)
-│   ├── app.js                 # Entry point
-│   ├── package.json
-│   ├── config/                # Konfigurasi (Supabase, dll)
-│   ├── controllers/           # Logic aplikasi
-│   ├── middleware/            # Middleware Express
-│   └── routes/                # API routes
-│
-├── frontend/                  # Frontend (Vue 3 + Vite)
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── src/
-│   │   ├── App.vue           # Root component
-│   │   ├── main.js           # Entry point
-│   │   ├── components/       # Reusable components
-│   │   ├── router/           # Vue Router config
-│   │   ├── stores/           # Pinia stores (state management)
-│   │   ├── views/            # Page components
-│   │   └── api/              # API calls (Axios)
-│   └── public/               # Static files
-│
-└── README.md                 # File ini
-```
+### 1. Authentication
+*   `POST /auth/register` - Daftar akun baru
+*   `POST /auth/login` - Login user
 
----
+### 2. CV Management
+*   `GET /cvs` - Ambil semua CV user
+*   `POST /cvs` - Buat CV baru
+*   `GET /cvs/:id/full` - Ambil data lengkap CV
+*   `PUT /cvs/:id` - Update data CV
+*   `POST /cvs/:id/toggle` - Link/Unlink item ke CV
 
-## 🛠️ Teknologi yang Digunakan
+### 3. Master Data (Profile Items)
+*   `GET/POST/PUT/DELETE /master/educations` - CRUD Pendidikan
+*   `GET/POST/PUT/DELETE /master/experiences` - CRUD Pengalaman
+*   `GET/POST/PUT/DELETE /master/skills` - CRUD Skill
 
-### Backend
-- **Express.js** - Web framework
-- **Supabase** - Database & Authentication
-- **bcrypt** - Password hashing
-- **JWT** - Token authentication
-- **CORS** - Cross-Origin Resource Sharing
-- **dotenv** - Environment variables
+### 4. Job Tracker
+*   `GET /job-tracker` - List semua lamaran
+*   `POST /job-tracker` - Tambah lamaran baru
+*   `PATCH /job-tracker/:id/status` - Update status lamaran
+*   `GET /job-tracker/stats` - Statistik lamaran
 
-### Frontend
-- **Vue 3** - Progressive JavaScript framework
-- **Vite** - Build tool & dev server
-- **Vue Router** - Routing
-- **Pinia** - State management
-- **Axios** - HTTP client
-- **html2pdf.js** - PDF export
+### 5. AI Features
+*   `POST /ai/experience` - Generate deskripsi pengalaman kerja
+*   `POST /ai/summary` - Generate summary profile
 
 ---
 
-## 📝 Available Scripts
+## 🗄️ Database ERD
+Struktur database relasional yang digunakan dalam aplikasi ini.
 
-### Backend
-
-```bash
-npm run dev    # Jalankan dengan nodemon (auto-reload saat ada perubahan)
-npm start      # Jalankan production
-```
-
-### Frontend
-
-```bash
-npm run dev      # Jalankan development server
-npm run build    # Build untuk production
-npm run preview  # Preview hasil build
-npm run lint     # Check & fix code style
-```
+![ERD Database](Screenshots/ERD%20UASCV.jpg)
 
 ---
 
-## 🐛 Troubleshooting
+## 📸 Galeri Screenshot
 
-### Port sudah terpakai
+### 1. Halaman Utama (Landing Page)
+Halaman depan yang menyambut pengguna.
+![Landing Page](Screenshots/root.png)
 
-Jika port 3000 atau 5173 sudah digunakan aplikasi lain:
+### 2. Onboarding & Login
+Proses masuk ke dalam sistem.
+![Onboarding](Screenshots/onBoarding.png)
 
-**Backend:**
-```bash
-# Di file backend/app.js, ubah PORT atau jalankan di port berbeda
-PORT=4000 npm run dev
-```
+### 3. Dashboard
+Pusat pengelolaan CV dan Job Tracker.
+![Dashboard](Screenshots/basicDetails.png)
 
-**Frontend:**
-```bash
-# Vite otomatis akan cari port lain jika 5173 terpakai
-npm run dev
-```
+### 4. Edit Pendidikan
+Formulir untuk menambah riwayat pendidikan.
+![Pendidikan](Screenshots/pendidikan.png)
 
-### Dependencies error
+### 5. Edit Pengalaman Kerja
+Formulir pengalaman kerja dengan bantuan AI.
+![Pengalaman](Screenshots/pengalaman.png)
 
-Jika ada error saat install dependencies:
+### 6. Edit Keahlian (Skills)
+Manajemen skill dengan level kemahiran.
+![Keahlian](Screenshots/keah.png)
 
-```bash
-# Bersihkan cache npm
-npm cache clean --force
+### 7. Preview CV
+Tampilan akhir CV yang siap di-download.
+![Preview](Screenshots/preview.png)
 
-# Hapus folder node_modules dan lock file
-rm -r node_modules package-lock.json
-
-# Install ulang
-npm install
-```
-
-### Module not found error
-
-Pastikan:
-1. Sudah menjalankan `npm install` di folder backend dan frontend
-2. Tidak ada typo di import statement
-3. File `.env` sudah dibuat dengan konfigurasi yang benar
+### 8. Job Tracker
+Fitur Kanban board untuk memantau status lamaran kerja.
+![Job Tracker](Screenshots/jobTracker.png)
 
 ---
-
-## 🚀 Deployment
-
-Akan diupdate ketika sudah siap untuk production.
-
----
-
-## 📧 Kontak & Support
-
-Jika ada pertanyaan atau masalah:
-- Tanya ke ketua kelompok
-- Create issue di repository ini
-- Hubungi tim developer
-
----
-
-## 📄 License
-
-ISC
