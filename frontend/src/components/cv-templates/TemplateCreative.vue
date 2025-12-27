@@ -10,7 +10,7 @@ const props = defineProps({
 const splitLines = (text) => text ? text.split('\n').filter(Boolean).map(l => l.replace(/^[\s•\-\*]+/, '').trim()) : [];
 
 const cssVars = computed(() => ({
-  '--primary': props.settings.primary || '#9b5de5', // Default ungu untuk creative
+  '--primary': props.settings.primary || '#9b5de5', 
   '--font-body': props.settings.font || 'Poppins',
   '--spacing': props.settings.spacing === 'compact' ? '0.8rem' : '1.5rem'
 }));
@@ -26,7 +26,6 @@ const cssVars = computed(() => ({
         <h1 class="text-2xl font-bold leading-tight mb-2">{{ cvInfo.user_name }}</h1>
         <p class="text-sm text-white/80 font-medium uppercase tracking-widest">{{ cvInfo.target_job_title }}</p>
       </div>
-
       <div class="space-y-3 text-sm text-white/90">
          <div v-if="cvInfo.email" class="flex items-center gap-3">
              <span class="opacity-70">✉️</span> <span class="break-all">{{ cvInfo.email }}</span>

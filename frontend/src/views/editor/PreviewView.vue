@@ -145,12 +145,7 @@ const fetchData = async () => {
           cvInfo.value.summary = profile.value.profile_summary;
       }
     } catch (e) { console.warn(e); }
-      
-      // Fallback Skills: Jika tidak ada skills di CV, dan tidak ada di profile (karena getMasterProfile cuma table profiles)
-      // Kita coba ambil dari master_skills endpoint (opsional, jika Anda punya API getMasterSkills)
-      // Atau, jika profile.value.skills memang ada (mungkin dari join?), kita pake itu.
-      // TAPI: berdasarkan controller, getProfile cuma select * from profiles. Jadi profile.value.skills KEMUNGKINAN undefined.
-      
+
       if (!sections.value.skills || !sections.value.skills.length) {
          // Coba fetch master skills
          try {
@@ -291,8 +286,8 @@ const downloadPdf = async () => {
         scrollY: 0,
         allowTaint: false,
         foreignObjectRendering: false,
-        letterRendering: true, // Improve text alignment
-        dpi: 300 // High resolution
+        letterRendering: true, 
+        dpi: 300
     });
     
     const imgData = canvas.toDataURL('image/jpeg', 1.0);

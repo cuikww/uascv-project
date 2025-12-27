@@ -10,9 +10,9 @@ const props = defineProps({
 const splitLines = (text) => text ? text.split('\n').filter(Boolean).map(l => l.replace(/^[\s•\-\*]+/, '').trim()) : [];
 
 const cssVars = computed(() => ({
-  '--primary': props.settings.primary || '#111827', // Default hitam/gelap
+  '--primary': props.settings.primary || '#111827',
   '--font-body': props.settings.font || 'Inter',
-  '--spacing': '0.75rem' // Minimalist biasanya lebih rapat tapi rapi
+  '--spacing': '0.75rem' 
 }));
 </script>
 

@@ -1,14 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { isLoggedIn } from '@/stores/auth.js';
 
-// Phase 1 Views
 import HomeView from '../views/HomeView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import LoginView from '../views/LoginView.vue';
 import OnboardingView from '../views/OnboardingView.vue';
 import CvDetailView from '@/views/CvDetailView.vue';
 
-// Phase 2 Views (Editor)
 import EducationView from '../views/editor/EducationView.vue';
 import ExperienceView from '../views/editor/ExperienceView.vue';
 import SkillsView from '../views/editor/SkillsView.vue';
@@ -16,7 +14,6 @@ import SkillsView from '../views/editor/SkillsView.vue';
 import SummaryView from '@/views/editor/SummaryView.vue';
 import PreviewView from '@/views/editor/PreviewView.vue';
 
-// Phase 3 Views (Job Tracker)
 import JobTrackerView from '@/views/JobTrackerView.vue';
 
 const router = createRouter({
@@ -58,8 +55,6 @@ const router = createRouter({
       component: CvDetailView,
       meta: { title: 'Info Dasar | UASCV', requiresAuth: true }
     },
-
-    // --- ROUTES BARU (PHASE 2) ---
     {
       path: '/editor/:cvId/education',
       name: 'education',
@@ -89,8 +84,6 @@ const router = createRouter({
       component: PreviewView,
       meta: { title: 'Preview & Export | UASCV', requiresAuth: true }
     },
-
-    // --- JOB TRACKER (PHASE 3) ---
     {
       path: '/job-tracker',
       name: 'jobTracker',
@@ -109,4 +102,4 @@ router.beforeEach((to) => {
   }
 })
 
-export default router
+export default router 

@@ -1,4 +1,3 @@
-// Mapping URL param ke Nama Tabel Database
 export const TABLE_MAP = {
     'educations': 'master_educations',
     'experiences': 'master_experiences',

@@ -8,7 +8,6 @@ import EditorLayout from '@/components/EditorLayout.vue';
 const route = useRoute();
 const cvId = route.params.cvId;
 
-// [UPDATE] Tambahkan field target lamaran di inisialisasi ref
 const cvData = ref({ 
     title: '', 
     status: 'draft', 
@@ -24,9 +23,8 @@ const message = ref("");
 
 const fetchAll = async () => {
     try {
-        // 1. Ambil Data CV (Judul, Status, Target Lamaran)
         const cvRes = await getCvFullContent(cvId);
-        // Pastikan mapping data benar
+
         const data = cvRes.data.cv_info;
         cvData.value = {
             title: data.title,
@@ -37,7 +35,6 @@ const fetchAll = async () => {
             target_job_description: data.target_job_description || ''
         };
 
-        // 2. Ambil Data Profil Master User
         const profileRes = await getMasterProfile();
         profileForm.value = profileRes.data.data || {};
     } catch(err) { console.error(err); }
@@ -47,7 +44,6 @@ const handleSave = async () => {
     saving.value = true;
     message.value = "";
     try {
-        // [UPDATE] Kirim data target lamaran saat update metadata
         await updateCvMetadata(cvId, { 
             title: cvData.value.title, 
             status: cvData.value.status,
@@ -57,7 +53,6 @@ const handleSave = async () => {
             target_job_description: cvData.value.target_job_description
         });
 
-        // Simpan Profil Master (Berlaku untuk semua CV)
         await saveMasterProfile(profileForm.value);
 
         message.value = "Berhasil disimpan!";
