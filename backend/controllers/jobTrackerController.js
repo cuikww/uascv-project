@@ -1,7 +1,6 @@
 import supabase from '../config/supabase.js';
 import { isValidUUID } from '../utils/helpers.js';
 
-// Get all job applications for user
 export const getAllJobApplications = async (req, res) => {
     const userId = req.user.id;
 
@@ -20,7 +19,6 @@ export const getAllJobApplications = async (req, res) => {
     }
 };
 
-// Get job applications grouped by status
 export const getJobApplicationsByStatus = async (req, res) => {
     const userId = req.user.id;
 
@@ -46,7 +44,6 @@ export const getJobApplicationsByStatus = async (req, res) => {
     }
 };
 
-// Get single job application
 export const getJobApplication = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
@@ -71,7 +68,6 @@ export const getJobApplication = async (req, res) => {
     }
 };
 
-// Create new job application
 export const createJobApplication = async (req, res) => {
     try {
         const userId = req.user?.id;
@@ -98,12 +94,10 @@ export const createJobApplication = async (req, res) => {
             difficulty_level
         } = req.body;
 
-        // Validasi required fields
         if (!company_name || !position_title) {
             return res.status(400).json({ message: "Company name and position title are required" });
         }
 
-        // Sanitasi cv_id
         if (cv_id === "" || cv_id === "null") {
             cv_id = null;
         }
@@ -147,7 +141,6 @@ export const createJobApplication = async (req, res) => {
     }
 };
 
-// Update job application
 export const updateJobApplication = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
@@ -158,7 +151,6 @@ export const updateJobApplication = async (req, res) => {
     }
 
     try {
-        // Verify ownership
         const { data: existing } = await supabase
             .from('job_applications')
             .select('id')
@@ -168,7 +160,6 @@ export const updateJobApplication = async (req, res) => {
 
         if (!existing) return res.status(403).json({ message: "Access denied" });
 
-        // Convert empty strings to null for date/optional fields
         updates = Object.keys(updates).reduce((acc, key) => {
             acc[key] = (updates[key] === '' || updates[key] === undefined) ? null : updates[key];
             return acc;
@@ -192,7 +183,6 @@ export const updateJobApplication = async (req, res) => {
     }
 };
 
-// Change job application status
 export const updateJobApplicationStatus = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
@@ -251,7 +241,6 @@ export const updateJobApplicationStatus = async (req, res) => {
     }
 };
 
-// Delete job application
 export const deleteJobApplication = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
@@ -285,7 +274,6 @@ export const deleteJobApplication = async (req, res) => {
     }
 };
 
-// Get statistics for dashboard
 export const getJobApplicationStats = async (req, res) => {
     const userId = req.user.id;
 

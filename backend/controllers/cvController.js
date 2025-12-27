@@ -6,7 +6,6 @@ export const getCvFullContent = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        // A. Ambil Info Dasar CV (Pastikan milik user)
         const { data: cv, error: cvError } = await supabase
             .from('cvs')
             .select('*')
@@ -16,8 +15,6 @@ export const getCvFullContent = async (req, res) => {
 
         if (cvError || !cv) return res.status(404).json({ message: "CV not found" });
 
-        // B. Ambil Master Data yang TERHUBUNG ke CV ini
-        // Menggunakan teknik Inner Join via Link Table
         const { data: educations } = await supabase
             .from('master_educations')
             .select('*, cv_education_links!inner(cv_id)')
@@ -54,11 +51,9 @@ export const toggleItemInCv = async (req, res) => {
     if (!linkConfig) return res.status(400).json({ message: "Invalid section" });
 
     try {
-        // Validasi: Pastikan CV milik user
         const { data: cv } = await supabase.from('cvs').select('id').eq('id', cvId).eq('user_id', userId).single();
         if (!cv) return res.status(403).json({ message: "Access denied to this CV" });
 
-        // Cek apakah item sudah ada di CV ini?
         const { data: exists, error } = await supabase
             .from(linkConfig.table)
             .select('*')
@@ -67,7 +62,6 @@ export const toggleItemInCv = async (req, res) => {
             .single();
 
         if (exists) {
-            // JIKA ADA -> HAPUS (Unlink)
             await supabase
                 .from(linkConfig.table)
                 .delete()
@@ -76,7 +70,6 @@ export const toggleItemInCv = async (req, res) => {
             
             res.json({ message: "Item removed from CV", status: 'removed' });
         } else {
-            // JIKA TIDAK ADA -> TAMBAH (Link)
             await supabase
                 .from(linkConfig.table)
                 .insert([{ cv_id: cvId, [linkConfig.fk_master]: itemId }]);
@@ -116,8 +109,8 @@ export const getAllCvs = async (req, res) => {
         const { data, error } = await supabase
             .from('cvs')
             .select('*')
-            .eq('user_id', userId) // Security: Cuma ambil punya user sendiri
-            .order('updated_at', { ascending: false }); // Yang baru diedit paling atas
+            .eq('user_id', userId)
+            .order('updated_at', { ascending: false }); 
 
         if (error) throw error;
         res.json({ data });
@@ -132,26 +125,22 @@ export const updateCv = async (req, res) => {
     const updates = req.body;
 
     try {
-        // 1. Sanitasi: Cegah user mengubah ID atau Owner secara paksa
         delete updates.id;
         delete updates.user_id;
         delete updates.created_at;
 
-        // 2. Tambahkan timestamp update
         updates.updated_at = new Date();
 
-        // 3. Update ke Database
         const { data, error } = await supabase
             .from('cvs')
             .update(updates)
             .eq('id', cvId)
-            .eq('user_id', userId) // Security: Pastikan update punya sendiri
+            .eq('user_id', userId)
             .select()
             .single();
 
         if (error) throw error;
         
-        // Jika data kosong, berarti CV tidak ditemukan atau bukan milik user ini
         if (!data) return res.status(404).json({ message: "CV tidak ditemukan atau akses ditolak" });
 
         res.json({ message: "CV berhasil diperbarui", data });
@@ -166,13 +155,12 @@ export const deleteCv = async (req, res) => {
     try {
         const { error, count } = await supabase
             .from('cvs')
-            .delete({ count: 'exact' }) // Minta info jumlah baris yang dihapus
+            .delete({ count: 'exact' })
             .eq('id', cvId)
-            .eq('user_id', userId); // Security: Cuma bisa hapus punya sendiri
+            .eq('user_id', userId);
 
         if (error) throw error;
 
-        // Jika count 0, artinya ID tidak ditemukan atau bukan milik user
         if (count === 0) {
             return res.status(404).json({ message: "CV tidak ditemukan atau akses ditolak" });
         }

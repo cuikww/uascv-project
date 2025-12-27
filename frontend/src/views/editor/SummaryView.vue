@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import EditorLayout from '@/components/EditorLayout.vue';
 import { getMasterProfile, saveMasterProfile } from '@/api/profile.js';
-import { getCvFullContent } from '@/api/cv.js'; // [BARU] Import API CV
+import { getCvFullContent } from '@/api/cv.js';
 import { generateSummary } from '@/api/ai.js';
 
 const route = useRoute();
@@ -13,16 +13,13 @@ const profile = ref({ fullname: '', profile_summary: '' });
 const loading = ref(false);
 const message = ref("");
 
-// State AI
 const aiLoading = ref(false);
 const targetJob = ref('');
 const experienceLevel = ref('Mid-Level');
 const aiKeywords = ref('');
 
-// [BARU] Context untuk Indikator UI
 const hasContext = ref(false);
 
-// 1. Fetch Data (Profile + CV Info)
 const fetchData = async () => {
     try {
         const [profileRes, cvRes] = await Promise.all([
@@ -30,10 +27,8 @@ const fetchData = async () => {
             getCvFullContent(cvId)
         ]);
 
-        // Set Profile
         profile.value = profileRes.data.data || { fullname: '', profile_summary: '' };
 
-        // [BARU] Set Target Job dari CV Info (jika ada)
         const cvInfo = cvRes.data.cv_info || {};
         if (cvInfo.target_job_title) {
             targetJob.value = cvInfo.target_job_title;
@@ -43,7 +38,6 @@ const fetchData = async () => {
     } catch(err) { console.error(err); }
 };
 
-// 2. Simpan Manual
 const handleSave = async () => {
     loading.value = true;
     message.value = "";
@@ -55,7 +49,6 @@ const handleSave = async () => {
     finally { loading.value = false; }
 };
 
-// 3. Generate AI
 const handleGenerateAI = async () => {
     if(!targetJob.value || !aiKeywords.value) return alert("Mohon isi Target Posisi dan Keywords.");
     

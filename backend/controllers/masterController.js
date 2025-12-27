@@ -2,11 +2,9 @@ import supabase from '../config/supabase.js';
 import { validationResult } from 'express-validator';
 import { TABLE_MAP, sanitizePayload, isValidUUID } from '../utils/helpers.js';
 
-// --- GENERIC CRUD HANDLER (Agar tidak Redundan) ---
-
 export const getMasterData = async (req, res) => {
     const { section } = req.params;
-    const userId = req.user.id; // Dari Middleware Auth
+    const userId = req.user.id; 
     const table = TABLE_MAP[section];
 
     if (!table) return res.status(400).json({ message: "Invalid section" });
@@ -15,7 +13,7 @@ export const getMasterData = async (req, res) => {
         const { data, error } = await supabase
             .from(table)
             .select('*')
-            .eq('user_id', userId) // Security: Hanya ambil data milik user sendiri
+            .eq('user_id', userId) 
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -26,7 +24,7 @@ export const getMasterData = async (req, res) => {
 };
 
 export const addMasterData = async (req, res) => {
-    // 1. Cek Validasi
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
@@ -34,13 +32,12 @@ export const addMasterData = async (req, res) => {
     const userId = req.user.id;
     const table = TABLE_MAP[section];
 
-    // 2. Sanitasi Data (Handling Date Format)
     const payload = sanitizePayload(req.body);
 
     try {
         const { data, error } = await supabase
             .from(table)
-            .insert([{ ...payload, user_id: userId }]) // Force user_id dari token
+            .insert([{ ...payload, user_id: userId }])
             .select()
             .single();
 
@@ -70,7 +67,7 @@ export const updateMasterData = async (req, res) => {
             .from(table)
             .update(payload)
             .eq('id', id)
-            .eq('user_id', userId) // Security Check: Pastikan yang diupdate punya user sendiri
+            .eq('user_id', userId) 
             .select()
             .single();
 
@@ -97,7 +94,7 @@ export const deleteMasterData = async (req, res) => {
             .from(table)
             .delete({ count: 'exact' })
             .eq('id', id)
-            .eq('user_id', userId); // Security Check
+            .eq('user_id', userId); 
 
         if (error) throw error;
         if (count === 0) return res.status(404).json({ message: "Item not found or access denied" });

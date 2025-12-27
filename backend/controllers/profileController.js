@@ -1,8 +1,7 @@
 import supabase from '../config/supabase.js';
 
-// 1. GET PROFILE (Ambil data diri user)
 export const getProfile = async (req, res) => {
-    const userId = req.user.id; // Dari Token
+    const userId = req.user.id; 
 
     try {
         const { data, error } = await supabase

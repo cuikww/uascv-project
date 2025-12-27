@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { login } from "@/api/auth.js";
 import { useRouter } from "vue-router";
-import { isLoggedIn } from "@/stores/auth.js"; // Atau pakai Pinia store
+import { isLoggedIn } from "@/stores/auth.js";
 
 const email = ref("");
 const password = ref("");

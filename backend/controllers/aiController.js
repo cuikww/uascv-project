@@ -3,14 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Inisialisasi SDK Baru
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// Gunakan model yang stabil. Jika 2.0 gagal, gunakan 'gemini-1.5-flash'
 const MODEL_NAME = "gemini-2.5-flash";
 
-// 1. GENERATE EXPERIENCE DESCRIPTION
-// ... imports dan inisialisasi AI
 
 export const generateExperienceDesc = async (req, res) => {
     const { position, company, keywords, target_job, target_company, target_desc } = req.body;
@@ -46,22 +42,19 @@ export const generateExperienceDesc = async (req, res) => {
         `;
 
         const response = await ai.models.generateContent({
-            model: MODEL_NAME, // Pastikan pakai gemini-2.5-flash atau gemini-1.5-flash
+            model: MODEL_NAME, 
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             config: {
-                temperature: 0.4, // Turunkan temperature agar lebih 'robot' dan patuh aturan
+                temperature: 0.4, 
             }
         });
 
-        // Pembersihan Tambahan di sisi Code (Jaga-jaga AI bandel)
         let text = response.text || "";
         text = text.trim();
 
-        // Hapus baris pertama jika tidak dimulai dengan bullet (berarti itu intro)
         const lines = text.split('\n');
         const cleanLines = lines.filter(line => line.trim().startsWith('•') || line.trim().startsWith('-') || line.trim().startsWith('*'));
 
-        // Jika filter di atas bekerja, gunakan hasilnya. Jika kosong (format beda), gunakan text asli.
         const finalResult = cleanLines.length > 0 ? cleanLines.join('\n') : text;
 
         res.json({ result: finalResult });
@@ -73,7 +66,6 @@ export const generateExperienceDesc = async (req, res) => {
     }
 };
 
-// 2. GENERATE PROFESSIONAL SUMMARY
 export const generateSummary = async (req, res) => {
     const { fullname, jobTitle, keywords, experience_level } = req.body;
 
@@ -94,8 +86,6 @@ export const generateSummary = async (req, res) => {
             4. Jangan pakai bullet points, gunakan teks narasi.
             5. Langsung ke isi ringkasan, tanpa basa-basi.
         `;
-
-        // Syntax Baru
         const response = await ai.models.generateContent({
             model: MODEL_NAME,
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -113,14 +103,12 @@ export const generateSummary = async (req, res) => {
     }
 };
 
-// 3. GENERATE STYLE CONFIG (JSON)
 export const generateStyle = async (req, res) => {
     const { prompt } = req.body;
 
     if (!prompt) return res.status(400).json({ message: "Prompt is required" });
 
     try {
-        // Instruct model to emit STRICT JSON only (no extra text)
         const fullPrompt = `
             You are an expert UI/UX Designer for a CV Builder. 
             Your task is to translate the user's description into a visual style configuration.
@@ -146,31 +134,27 @@ export const generateStyle = async (req, res) => {
         const response = await ai.models.generateContent({
             model: MODEL_NAME,
             contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
-            config: { temperature: 0.2 } // Rendah agar output JSON stabil
+            config: { temperature: 0.2 } 
         });
 
         let text = response.text || "";
         text = text.trim();
 
-        // Bersihkan jika AI tidak sengaja membungkus dengan markdown ```json ... ```
         text = text.replace(/^```json/, '').replace(/^```/, '').replace(/```$/, '');
 
-        // Attempt to extract JSON substring if AI added extraneous chars
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         const jsonString = jsonMatch ? jsonMatch[0] : text;
 
         try {
             const parsed = JSON.parse(jsonString);
 
-            // Basic validation & Defaults
             if (!parsed.primary) parsed.primary = "#006894";
             if (!parsed.font) parsed.font = "Inter";
             if (!parsed.spacing) parsed.spacing = "comfortable";
 
-            // [UPDATE] Validasi template agar sesuai dengan yang ada di Frontend
             const validTemplates = ["modern", "creative", "minimalist", "professional"];
             if (!parsed.template || !validTemplates.includes(parsed.template)) {
-                parsed.template = "modern"; // Fallback default
+                parsed.template = "modern";
             }
 
             return res.json({ style_config: parsed });
